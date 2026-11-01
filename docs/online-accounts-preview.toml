@@ -7,23 +7,26 @@ oauth_live_verified = false
 google_live_verified = true
 google_live_refresh_verified = true
 microsoft_personal_live_verified = false
+non_microsoft_delivery_complete = true
+other_providers_validation = "fixtures_by_user_request"
+completion_report = "nyx-accounts/docs/NON_MICROSOFT_COMPLETION.md"
 google_validation_report = "nyx-accounts/docs/GOOGLE_VALIDATION.md"
 merge_requires_explicit_approval = true
 
 [[repositories]]
 name = "nyx-accounts"
 url = "https://github.com/design-nexus/nyx-accounts.git"
-revision = "ee04d92b27aadb89b9018db96f49115e1b565b5a"
+revision = "9672856d7659278358587d7aea1368c3732c204d"
 
 [[repositories]]
 name = "nyx-core"
 url = "https://github.com/design-nexus/nyx-core.git"
-revision = "f972d4e21f087721c1e5b5af25acc85cf9df5e9c"
+revision = "1f04d4f23d4583084dda861a9bb6fc9edb4a0842"
 
 [[repositories]]
 name = "nyx-cloud"
 url = "https://github.com/design-nexus/nyx-cloud.git"
-revision = "709168078a32a3fe93632574c00281fbe5cdd01f"
+revision = "c2c7b9110524597cd114d056c5d74f0a07556c03"
 
 [[repositories]]
 name = "nyx-settings"
@@ -33,12 +36,12 @@ revision = "4b5fc45c0e22d4125f8a5a9c8f02735677fd12f2"
 [[repositories]]
 name = "nyx-mail"
 url = "https://github.com/design-nexus/nyx-mail.git"
-revision = "14847deed76e61e14a44b1932c1c7637fa064cd4"
+revision = "271fcc0cb33f44f764adf21d0df9e9ca65f21f84"
 
 [[repositories]]
 name = "nyx-calendar"
 url = "https://github.com/design-nexus/nyx-calendar.git"
-revision = "635a8b1aef799f9854e2815fafef6fff4b860115"
+revision = "c0c321efe417633c8fe9eaf39c05eba907b31499"
 
 [[repositories]]
 name = "nyx-contacts"
@@ -48,5 +51,5 @@ revision = "4e3e74b6ec84d1769a94ecfcf0a88beb641a6e3f"
 [[repositories]]
 name = "nyx-reminders"
 url = "https://github.com/design-nexus/nyx-reminders.git"
-revision = "1752f68831163fd772f697566db93f9f5d9d75dd"
+revision = "3fb0e1c830da5bc2e26109cee45c6a9f7a941862"
 
