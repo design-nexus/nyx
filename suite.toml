@@ -227,7 +227,7 @@ artifacts = []
 id = "settings"
 name = "nyx-settings"
 url = "https://github.com/design-nexus/nyx-settings.git"
-revision = "a244f6dd76c0ec61730d5512ff650731968cfd94"
+revision = "1ccf169d53cf990ae00f912515096742c65c6816"
 status = "published"
 artifacts = []
 
@@ -706,7 +706,7 @@ supported_releases = []
 id = "share"
 name = "nyx-share"
 url = "https://github.com/design-nexus/nyx-share.git"
-revision = "c35e56ee4c439f404acb4070a3ded2aa4d36ffd5"
+revision = "4cf7aab62b6f569b9cffde4a61a40d6aadcaa835"
 status = "published"
 artifacts = []
 
