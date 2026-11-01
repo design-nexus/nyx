@@ -1,0 +1,48 @@
+# Feature inventory only; supported suite.toml and main release pins remain unchanged.
+schema_version = 1
+branch = "feature/nyx-online-accounts"
+authentication_interface = "io.github.design_nexus.nyx.Accounts1"
+preview_installer = "nyx-accounts/install-preview.sh"
+oauth_live_verified = false
+merge_requires_explicit_approval = true
+
+[[repositories]]
+name = "nyx-accounts"
+url = "https://github.com/design-nexus/nyx-accounts.git"
+revision = "ecbe31cbfe6688dd5b3d7803c58e433715427c57"
+
+[[repositories]]
+name = "nyx-core"
+url = "https://github.com/design-nexus/nyx-core.git"
+revision = "1fa444e8c427f8d2f4b6fd6d1ace1c5298e4d623"
+
+[[repositories]]
+name = "nyx-cloud"
+url = "https://github.com/design-nexus/nyx-cloud.git"
+revision = "709168078a32a3fe93632574c00281fbe5cdd01f"
+
+[[repositories]]
+name = "nyx-settings"
+url = "https://github.com/design-nexus/nyx-settings.git"
+revision = "8ec3f18f39d14c0421fe581deb163fac092db8e9"
+
+[[repositories]]
+name = "nyx-mail"
+url = "https://github.com/design-nexus/nyx-mail.git"
+revision = "14847deed76e61e14a44b1932c1c7637fa064cd4"
+
+[[repositories]]
+name = "nyx-calendar"
+url = "https://github.com/design-nexus/nyx-calendar.git"
+revision = "b3e4be4554c3bc924436300fa9f61e3329ae7fd2"
+
+[[repositories]]
+name = "nyx-contacts"
+url = "https://github.com/design-nexus/nyx-contacts.git"
+revision = "c453875450a5daa6d54a23f908488548dce20e20"
+
+[[repositories]]
+name = "nyx-reminders"
+url = "https://github.com/design-nexus/nyx-reminders.git"
+revision = "2a042806ab94bf2535af11b45ac34e47cef64e01"
+
