@@ -5,6 +5,7 @@ authentication_interface = "io.github.design_nexus.nyx.Accounts1"
 preview_installer = "nyx-accounts/install-preview.sh"
 oauth_live_verified = false
 google_live_verified = true
+google_live_refresh_verified = true
 microsoft_personal_live_verified = false
 google_validation_report = "nyx-accounts/docs/GOOGLE_VALIDATION.md"
 merge_requires_explicit_approval = true
@@ -12,7 +13,7 @@ merge_requires_explicit_approval = true
 [[repositories]]
 name = "nyx-accounts"
 url = "https://github.com/design-nexus/nyx-accounts.git"
-revision = "b988fe624d18a0c04feb00e70d0be1ba915fbdce"
+revision = "ee04d92b27aadb89b9018db96f49115e1b565b5a"
 
 [[repositories]]
 name = "nyx-core"
