@@ -299,3 +299,17 @@ the real dock and Control Center exist.
 5. **Bar**: the Control Center replaces the plugins in §4.7's table and nothing else; the
    bar keeps glanceable indicators (temperature, CPU/RAM, connection/volume/battery)
    that open the Control Center.
+
+## 10. Changes while building (2026-11-01)
+
+- **Widget framework location**: `nyx-widgets` (live values, tile sizes, page layout)
+  and `nyx-providers` (system data) live in `nyx-control-center` for now, not in
+  nyx-design and nyx-core, so they can change without a shared-crate pin bump each time.
+  They move when Desktop Widgets (milestone 5) becomes their second user.
+- **`Home.Devices1`** on `nyx-homed` (nyx-home `5860fcf`): `Snapshot()` (lights,
+  switches, fans, climate and scenes by room, as JSON) and `Call(entity, service, data)`
+  with a short allow-list. The Control Center's Home tile reads it every 3 s while shown.
+  A light group whose lights are hidden in Home Assistant stands for them.
+- **Window previews** use `ext-image-copy-capture` with the toplevel's identifier, which
+  is Hyprland's `stableId` (`nyx-desktop` `44d4d4c`). Windows on hidden workspaces show
+  their last frame.
