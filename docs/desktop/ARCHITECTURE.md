@@ -272,7 +272,23 @@ Each ends with tests, `cargo check`/clippy, install, and a measurement note.
    switch latency on 1×4K and 2×4K), reliability passes (Hyprland restart, hotplug,
    sleep/resume, logout).
 
-## 8. Decisions (2026-10-31)
+## 8. Measurements
+
+Milestone 1, 2026-10-31, on the laptop (Intel(R) Core(TM) Ultra 9 285H, eDP 2560×1600 @1.6 + a headless output),
+release build, 30 s idle after 8 s settling, while the user worked normally:
+
+| Process | RSS | PSS | Private | CPU over 30 s | Wakeups / 30 s |
+| --- | --- | --- | --- | --- | --- |
+| `nyx-desktop` watcher alone (no GTK) | 3.2 MiB | | | 0 s | 38 (Hyprland events) |
+| Minimal GTK4 layer-shell surface (10 × 48 px icons + watcher) | 127 MiB | 56.6 MiB | 32.7 MiB | 0.01 s (0.03 % of a core) | 62 |
+
+RSS is mostly the shared GL driver and GTK libraries. What each extra GTK desktop process
+really adds is its private memory, about 33 MiB at this floor, so three separate panel
+processes cost about 65 MiB more than one combined process. That's within reason for the
+recoverability it buys: **keep separate processes** (decision 1), and measure again once
+the real dock and Control Center exist.
+
+## 9. Decisions (2026-10-31)
 
 1. **Processes**: separate, as the brief says; merge the three UIs into one process only
    if milestone-1 measurements show the memory cost is too high.
