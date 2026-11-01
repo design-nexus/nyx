@@ -549,7 +549,7 @@ supported_releases = []
 id = "notes"
 name = "nyx-notes"
 url = "https://github.com/design-nexus/nyx-notes.git"
-revision = "bdb59c4930f0bdc30373b68fec2414b3f09054b4"
+revision = "79b5fcadb1f9c777f3c9f8e4b22a8fe3c90716df"
 status = "published"
 artifacts = []
 
@@ -648,7 +648,7 @@ supported_releases = []
 id = "mail"
 name = "nyx-mail"
 url = "https://github.com/design-nexus/nyx-mail.git"
-revision = "6780a49fd1934e1f2c14d1d64d701cca4ad2e0a8"
+revision = "35e240a1457e1a989c6d14d93133d97ce35dceac"
 status = "published"
 artifacts = []
 
@@ -706,7 +706,7 @@ supported_releases = []
 id = "share"
 name = "nyx-share"
 url = "https://github.com/design-nexus/nyx-share.git"
-revision = "56c151482618fa1adf85d50ac8244b2b6dc51e6a"
+revision = "3018e8fc3caaead7db544c849d0e3ae159f5df9b"
 status = "published"
 artifacts = []
 
