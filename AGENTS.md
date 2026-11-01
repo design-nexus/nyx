@@ -21,5 +21,5 @@ builds released apps from source.
 Run only essential checks for changed packages. Never download models or run
 inference for routine verification. Keep identities, application data, and existing
 integrations stable. Use public pinned dependencies across repository boundaries.
-Install updates without opening/restarting applications. The 25 source repositories
+Install updates without opening/restarting applications. Restarting background services after installation is allowed. The 25 source repositories
 have publication approval; new remote repositories still require explicit approval.
