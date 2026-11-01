@@ -706,7 +706,7 @@ supported_releases = []
 id = "share"
 name = "nyx-share"
 url = "https://github.com/design-nexus/nyx-share.git"
-revision = "4cf7aab62b6f569b9cffde4a61a40d6aadcaa835"
+revision = "b068cf19e2a793e3222957b0085e254f8c8ee18b"
 status = "published"
 artifacts = []
 
