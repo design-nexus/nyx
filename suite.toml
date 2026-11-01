@@ -720,3 +720,23 @@ packages = ["nyx-share", "nyx-share-daemon", "nyx-share-sheet"]
 default = true
 version = "0.1.0"
 supported_releases = []
+
+# Dock: the floating app dock (installing doesn't switch docks; nyx-dock --enable does).
+[[repositories]]
+id = "dock"
+name = "nyx-dock"
+url = "https://github.com/design-nexus/nyx-dock.git"
+revision = "e2d17bfbfdd698fb4ad211501c31c2b1c19115d1"
+status = "published"
+artifacts = []
+
+[[applications]]
+id = "dock"
+repository = "dock"
+target_repository = "nyx-dock"
+source = "."
+manifest = "Cargo.toml"
+packages = ["nyx-dock"]
+default = true
+version = "0.1.0"
+supported_releases = []
