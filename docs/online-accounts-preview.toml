@@ -1,4 +1,4 @@
-# Feature inventory only; supported suite.toml and main release pins remain unchanged.
+# Feature rollout inventory; suite.toml on this branch also pins the normal native installation.
 schema_version = 1
 branch = "feature/nyx-online-accounts"
 authentication_interface = "io.github.design_nexus.nyx.Accounts1"
@@ -12,44 +12,47 @@ other_providers_validation = "fixtures_by_user_request"
 completion_report = "nyx-accounts/docs/NON_MICROSOFT_COMPLETION.md"
 google_validation_report = "nyx-accounts/docs/GOOGLE_VALIDATION.md"
 merge_requires_explicit_approval = true
+microsoft_live_test_gate_waived = true
+normal_installation_prepared = true
+rollout_report = "nyx-accounts/docs/ROLLOUT.md"
 
 [[repositories]]
 name = "nyx-accounts"
 url = "https://github.com/design-nexus/nyx-accounts.git"
-revision = "9672856d7659278358587d7aea1368c3732c204d"
+revision = "5fc6ef9caa8dd89794393c20aea4afcf565b1e00"
 
 [[repositories]]
 name = "nyx-core"
 url = "https://github.com/design-nexus/nyx-core.git"
-revision = "1f04d4f23d4583084dda861a9bb6fc9edb4a0842"
+revision = "9dc196245bbf0ccc93b8bf04ac61bb476b85e4d5"
 
 [[repositories]]
 name = "nyx-cloud"
 url = "https://github.com/design-nexus/nyx-cloud.git"
-revision = "c2c7b9110524597cd114d056c5d74f0a07556c03"
+revision = "ba6385f60597a9ca6ebd5fb63836a1ea3dfa0f49"
 
 [[repositories]]
 name = "nyx-settings"
 url = "https://github.com/design-nexus/nyx-settings.git"
-revision = "4b5fc45c0e22d4125f8a5a9c8f02735677fd12f2"
+revision = "e74f7a04a1359d38c0b52e02dcb962234a7918b2"
 
 [[repositories]]
 name = "nyx-mail"
 url = "https://github.com/design-nexus/nyx-mail.git"
-revision = "271fcc0cb33f44f764adf21d0df9e9ca65f21f84"
+revision = "cadb6dee9a1cf8ec8122a20fdf0b60d97d519786"
 
 [[repositories]]
 name = "nyx-calendar"
 url = "https://github.com/design-nexus/nyx-calendar.git"
-revision = "c0c321efe417633c8fe9eaf39c05eba907b31499"
+revision = "885160c2f9ea0a6f31ea7e41e342062aaa47f432"
 
 [[repositories]]
 name = "nyx-contacts"
 url = "https://github.com/design-nexus/nyx-contacts.git"
-revision = "4e3e74b6ec84d1769a94ecfcf0a88beb641a6e3f"
+revision = "465208d8188f1f4a65c39f2a7d3595adb8c65b42"
 
 [[repositories]]
 name = "nyx-reminders"
 url = "https://github.com/design-nexus/nyx-reminders.git"
-revision = "3fb0e1c830da5bc2e26109cee45c6a9f7a941862"
+revision = "b2a9704dc2718e601de015c200f5ecdd2921af5a"
 

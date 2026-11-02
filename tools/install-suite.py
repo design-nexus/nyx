@@ -23,6 +23,9 @@ def main():
   if not selected:raise SystemExit('Choose an application or all')
   unknown=[id for id in selected if id not in apps]
   if unknown:raise SystemExit('Unknown application: '+', '.join(unknown))
+  # Authentication is a shared prerequisite of the native account consumers.
+  if any(apps[id].get('requires_accounts',False) for id in selected):
+   selected=['accounts',*selected]
   for id in dict.fromkeys(selected):
    if id not in apps:raise SystemExit('Unknown application: '+id)
    repo=repos[apps[id]['repository']];name=id+'-x86_64.tar.gz';artifact='dist/'+name

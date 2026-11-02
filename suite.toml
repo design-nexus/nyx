@@ -30,9 +30,9 @@ mode = "self"
 [[repositories]]
 id = "core"
 name = "nyx-core"
-dependency_revision = "52cba5e27a3dd5f00c780f53e423302b4b5f9c9c"
+dependency_revision = "9dc196245bbf0ccc93b8bf04ac61bb476b85e4d5"
 url = "https://github.com/design-nexus/nyx-core.git"
-revision = "52cba5e27a3dd5f00c780f53e423302b4b5f9c9c"
+revision = "9dc196245bbf0ccc93b8bf04ac61bb476b85e4d5"
 status = "published"
 artifacts = []
 
@@ -113,7 +113,7 @@ artifacts = []
 id = "contacts"
 name = "nyx-contacts"
 url = "https://github.com/design-nexus/nyx-contacts.git"
-revision = "b5f427fc75510773598a8acc7761c5127cfbaa8e"
+revision = "465208d8188f1f4a65c39f2a7d3595adb8c65b42"
 status = "published"
 artifacts = []
 
@@ -227,7 +227,7 @@ artifacts = []
 id = "settings"
 name = "nyx-settings"
 url = "https://github.com/design-nexus/nyx-settings.git"
-revision = "1ccf169d53cf990ae00f912515096742c65c6816"
+revision = "e74f7a04a1359d38c0b52e02dcb962234a7918b2"
 status = "published"
 artifacts = []
 
@@ -292,6 +292,7 @@ manifest = "Cargo.toml"
 packages = ["nyx-contacts"]
 default = true
 version = "0.1.0"
+requires_accounts = true
 supported_releases = ["0.1.0"]
 
 [[applications]]
@@ -447,6 +448,7 @@ manifest = "Cargo.toml"
 packages = ["nyx-settings", "nyx-goa-helper"]
 default = true
 version = "0.1.1"
+requires_accounts = true
 supported_releases = ["0.1.0"]
 
 [[applications]]
@@ -509,8 +511,8 @@ supported_releases = ["0.1.0"]
 id = "cloud"
 name = "nyx-cloud"
 url = "https://github.com/design-nexus/nyx-cloud.git"
-revision = "072cb06bf7a975e536b8fcdd2d19ec7a911e14d7"
-dependency_revision = "072cb06bf7a975e536b8fcdd2d19ec7a911e14d7"
+revision = "ba6385f60597a9ca6ebd5fb63836a1ea3dfa0f49"
+dependency_revision = "ba6385f60597a9ca6ebd5fb63836a1ea3dfa0f49"
 status = "published"
 artifacts = []
 
@@ -532,6 +534,7 @@ manifest = "Cargo.toml"
 packages = ["nyx-cloud"]
 default = true
 version = "0.1.0"
+requires_accounts = true
 supported_releases = []
 
 [[applications]]
@@ -648,7 +651,7 @@ supported_releases = []
 id = "mail"
 name = "nyx-mail"
 url = "https://github.com/design-nexus/nyx-mail.git"
-revision = "427fbf31d7f7ec5db505b432b834c1332a37868c"
+revision = "cadb6dee9a1cf8ec8122a20fdf0b60d97d519786"
 status = "published"
 artifacts = []
 
@@ -661,13 +664,14 @@ manifest = "Cargo.toml"
 packages = ["nyx-mail", "nyx-maild"]
 default = true
 version = "0.1.1"
+requires_accounts = true
 supported_releases = []
 
 [[repositories]]
 id = "calendar"
 name = "nyx-calendar"
 url = "https://github.com/design-nexus/nyx-calendar.git"
-revision = "8c0c36f59459f282748d22c1ab2b1b6c6cc46328"
+revision = "885160c2f9ea0a6f31ea7e41e342062aaa47f432"
 status = "published"
 artifacts = []
 
@@ -680,13 +684,14 @@ manifest = "Cargo.toml"
 packages = ["nyx-calendar", "nyx-calendard"]
 default = true
 version = "0.1.1"
+requires_accounts = true
 supported_releases = []
 
 [[repositories]]
 id = "reminders"
 name = "nyx-reminders"
 url = "https://github.com/design-nexus/nyx-reminders.git"
-revision = "ffb3d218f289213dd5509c01d53d6da1ffe3bb11"
+revision = "b2a9704dc2718e601de015c200f5ecdd2921af5a"
 status = "published"
 artifacts = []
 
@@ -699,6 +704,7 @@ manifest = "Cargo.toml"
 packages = ["nyx-reminders", "nyx-remindersd"]
 default = true
 version = "0.1.1"
+requires_accounts = true
 supported_releases = []
 
 # Share: the Share service, Share Sheet and CLI.
@@ -759,5 +765,25 @@ source = "."
 manifest = "Cargo.toml"
 packages = ["nyx-control-center"]
 default = true
+version = "0.1.0"
+supported_releases = []
+
+# Shared native authentication service; installed before account consumers.
+[[repositories]]
+id = "accounts"
+name = "nyx-accounts"
+url = "https://github.com/design-nexus/nyx-accounts.git"
+revision = "5fc6ef9caa8dd89794393c20aea4afcf565b1e00"
+status = "published"
+artifacts = []
+
+[[applications]]
+id = "accounts"
+repository = "accounts"
+target_repository = "nyx-accounts"
+source = "."
+manifest = "Cargo.toml"
+packages = ["nyx-accounts-service"]
+default = false
 version = "0.1.0"
 supported_releases = []
