@@ -105,7 +105,7 @@ artifacts = []
 id = "pdf"
 name = "nyx-pdf"
 url = "https://github.com/design-nexus/nyx-pdf.git"
-revision = "499a6c7e4426ff44167352474ce5ea9d360db427"
+revision = "0e65469b380a0e4debbf6a09cd0a6c31876900e0"
 status = "published"
 artifacts = []
 
@@ -129,7 +129,7 @@ artifacts = []
 id = "photos"
 name = "nyx-photos"
 url = "https://github.com/design-nexus/nyx-photos.git"
-revision = "4aa6e9cd0430408b67f850e3961e78517feb155f"
+revision = "7692ef4a57d9997986b1c47a2cb907b5a2e1564a"
 status = "published"
 artifacts = []
 
@@ -195,7 +195,7 @@ artifacts = []
 id = "capture"
 name = "nyx-capture"
 url = "https://github.com/design-nexus/nyx-capture.git"
-revision = "013d9909ed515c152bbf67187479f750dbd69955"
+revision = "c98cba0d0067ddf324807399c80aa8f7effbb713"
 status = "published"
 artifacts = []
 
@@ -227,7 +227,7 @@ artifacts = []
 id = "settings"
 name = "nyx-settings"
 url = "https://github.com/design-nexus/nyx-settings.git"
-revision = "e20117fb08b162a3612a17260846ddb8e4e5efbf"
+revision = "1ccf169d53cf990ae00f912515096742c65c6816"
 status = "published"
 artifacts = []
 
@@ -549,7 +549,7 @@ supported_releases = []
 id = "notes"
 name = "nyx-notes"
 url = "https://github.com/design-nexus/nyx-notes.git"
-revision = "bdb59c4930f0bdc30373b68fec2414b3f09054b4"
+revision = "d11c78a26ee3246a9fd8ea36d83198d52f061b00"
 status = "published"
 artifacts = []
 
@@ -608,7 +608,7 @@ supported_releases = []
 id = "maps"
 name = "nyx-maps"
 url = "https://github.com/design-nexus/nyx-maps.git"
-revision = "e4b8fea99f70c13c803b39d9bc34597da5df46ac"
+revision = "e23589fc9e90cd1a84f85e2db824188b5833a868"
 status = "published"
 artifacts = []
 # System libraries its build needs (its installer has no app_info for CI to read).
@@ -648,7 +648,7 @@ supported_releases = []
 id = "mail"
 name = "nyx-mail"
 url = "https://github.com/design-nexus/nyx-mail.git"
-revision = "6780a49fd1934e1f2c14d1d64d701cca4ad2e0a8"
+revision = "427fbf31d7f7ec5db505b432b834c1332a37868c"
 status = "published"
 artifacts = []
 
@@ -706,7 +706,7 @@ supported_releases = []
 id = "share"
 name = "nyx-share"
 url = "https://github.com/design-nexus/nyx-share.git"
-revision = "b11595f3e0203e1f43f43f6fe55e34e931feb8bc"
+revision = "b068cf19e2a793e3222957b0085e254f8c8ee18b"
 status = "published"
 artifacts = []
 
@@ -717,6 +717,47 @@ target_repository = "nyx-share"
 source = "."
 manifest = "Cargo.toml"
 packages = ["nyx-share", "nyx-share-daemon", "nyx-share-sheet"]
+default = true
+version = "0.1.0"
+supported_releases = []
+
+# Dock: the floating app dock (installing doesn't switch docks; nyx-dock --enable does).
+[[repositories]]
+id = "dock"
+name = "nyx-dock"
+url = "https://github.com/design-nexus/nyx-dock.git"
+revision = "e2d17bfbfdd698fb4ad211501c31c2b1c19115d1"
+status = "published"
+artifacts = []
+
+[[applications]]
+id = "dock"
+repository = "dock"
+target_repository = "nyx-dock"
+source = "."
+manifest = "Cargo.toml"
+packages = ["nyx-dock"]
+default = true
+version = "0.1.0"
+supported_releases = []
+
+# Control Center: the quick settings panel (a user service; the bar widgets are put in
+# place, not added to the bar).
+[[repositories]]
+id = "control-center"
+name = "nyx-control-center"
+url = "https://github.com/design-nexus/nyx-control-center.git"
+revision = "151aef9fc6d2e1c505055e97a2a1fc14b466e0e5"
+status = "published"
+artifacts = []
+
+[[applications]]
+id = "control-center"
+repository = "control-center"
+target_repository = "nyx-control-center"
+source = "."
+manifest = "Cargo.toml"
+packages = ["nyx-control-center"]
 default = true
 version = "0.1.0"
 supported_releases = []
