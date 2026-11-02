@@ -313,3 +313,27 @@ the real dock and Control Center exist.
 - **Window previews** use `ext-image-copy-capture` with the toplevel's identifier, which
   is Hyprland's `stableId` (`nyx-desktop` `44d4d4c`). Windows on hidden workspaces show
   their last frame.
+
+## 11. Notification Center, stage A (2026-11-01)
+
+Built in `nyx-notification-center` (approved mockup: nyx-design `2302785`).
+
+- **What Omarchy keeps**: `history.json` holds closed rows only for 24 hours (at most
+  100); `live.json` the pop-ups on screen; `quiet.json` Do not disturb. Each row has a
+  stable `key`, the click command (`execArgv`) and Omarchy's command buttons
+  (`execActions`), and on closing a `closed_reason`: `expired`, `dismissed`, `activated`
+  or `closed` (withdrawn by the app).
+- **`nyx-notifyd`** (no GTK, ~6 MiB) watches that folder with inotify, copies every row
+  into `~/.local/share/nyx/notifications.db` and serves it as
+  `io.github.design_nexus.nyx.Notifications1` (JSON, `Changed` signal). It also runs the
+  Do not disturb schedule (switching Omarchy's setting only at the start and end of the
+  quiet hours) and hourly retention, and writes `~/.local/state/nyx/notifications.json`
+  (unread count) for the bar button to watch.
+- **Inbox rule**: `expired` stays in the Inbox; `dismissed`, `activated`, `closed`, and
+  Omarchy's passing senders (`omarchy-action`, `notify-send`) go straight to history.
+  Replaced text (same key) makes a row unread again. A deleted row leaves a `gone` marker
+  for three days so Omarchy's copy doesn't bring it back.
+- **Limits until stage B**: an app's own D-Bus action buttons work only while its pop-up
+  is up (Omarchy's command buttons keep working); "hide content when locked" waits for
+  Nyx-drawn pop-ups and lock-screen surfaces.
+- Keys: Super + N (Notification Center), Super + D (Control Center).
