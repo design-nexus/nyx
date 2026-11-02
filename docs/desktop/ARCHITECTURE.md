@@ -157,13 +157,20 @@ nyx-dock  nyx-control-   nyx-notification-  nyx-desktop-
 
 ### 4.5 Control Center (`nyx-control-center`)
 - Right-edge, full-height layer surface (as in the approved mockup), resident and hidden
-  between uses for instant open; keyboard-interactive on demand; Esc closes.
-- Dashboard pages = `nyx-widgets` tile views in a 4-column grid, layout in
-  `~/.config/nyx/control-center.toml`; detail views (Wi-Fi, Bluetooth, VPN) replace the
-  page and restore page + scroll on Back.
-- Workspace-mode tile shows Omarchy's **three** modes (tiling, scrolling, floating):
-  click cycles via `omarchy-hyprland-workspace-layout-toggle`, the arrow offers the three.
-- Links to Nyx Settings pages for anything beyond a quick control.
+  between uses for instant open; keyboard-interactive on demand; Esc closes; a catcher
+  surface behind it (on its own layer, with an explicit input region) closes it on a
+  click anywhere else, the bar and dock included.
+- Dashboard pages = `nyx-widgets` tiles in a 4-column grid of **48 px rows**, layout in
+  `~/.config/nyx/control-center.toml` (with a `version`; older layouts migrate on load).
+  1×1 toggles are just their icon; Wi-Fi, Bluetooth, VPN and Tailscale are slim 2×1
+  bars; each tile kind has its own colour from the theme's swatches (`@cc_blue`…).
+- Detail views replace the page: Wi-Fi, Bluetooth, VPN, Tailscale, Screens, Battery.
+  The sound tile's popover holds outputs, each app's volume and the microphone.
+- Workspace-mode tile shows Omarchy's **three** modes (tiling, scrolling, floating);
+  a click goes to the next (`omarchy-hyprland-workspace-layout-toggle`).
+- Everything is changed through Omarchy's own commands where it has one (brightness,
+  DNS, band, Bluetooth pairing, scale, text size, Do not disturb…), so its keys, OSD
+  and bar agree. Links to Nyx Settings pages for anything beyond a quick control.
 
 ### 4.6 Desktop Widgets
 - `nyx-desktop-widgets`: one bottom-layer surface per monitor; layouts keyed by
@@ -179,40 +186,36 @@ nyx-dock  nyx-control-   nyx-notification-  nyx-desktop-
   screen. The workspace-profile config leaves room for a wallpaper key.
 
 ### 4.7 Bar plugins the Control Center replaces
-No duplicate features: once a Control Center widget covers a bar plugin and has been
-checked, the plugin comes out of the bar layout (`shell.json` `bar.layout`, through
-Settings' bar-layout backend) and, for third-party ones, is uninstalled. One at a time,
-so nothing goes missing in between.
+No duplicate features: once Nyx covers everything a bar plugin does, the plugin can come
+out of the bar. The feature-by-feature record is [PARITY.md](PARITY.md) (complete as of
+2026-11-02); the user removes the plugins themselves.
 
-| Bar plugin now | Replaced by |
+| Bar plugin | Replaced by |
 | --- | --- |
-| `omarchy.network` | Wi-Fi tile + detail view |
-| `omarchy.bluetooth` | Bluetooth tile + detail view |
-| `omarchy.audio` | Volume slider + output/app-volume popover |
-| `omarchy.power` | Header power button + Power mode tile |
-| `omarchy.tailscale`, `design-nexus.privacy-route` | VPN tile + detail view (NetworkManager VPNs, Tailscale, NordVPN, Tor; keeps privacy-route's "one route carries traffic at a time" rule) |
-| `omarchy.monitor`, `harshith.system-monitor` | System widget (shared 1 Hz sampler; nyx-activity for details) |
-| `mryll.meteobar`, `design-nexus.weather` | Weather widget (nyx-weather) |
-| `omacal.upcoming` | Up next widget (nyx-calendard) |
-| `jankeesvw.notification-center` | Notification Center (already being removed) |
-| `ken.nyx-assistant` | Assistant tile (status, mute) + its dock Quick Panel |
-| `ken.omarchy-backup` | Backup tile (status, back up now) |
+| `omarchy.network` | Wi-Fi tile + view (networks, DNS provider, band, sign-in page, connection details, speed test, QR share) |
+| `omarchy.bluetooth` | Bluetooth tile + view (connect, pair nearby devices, forget, battery) |
+| `omarchy.audio` | Sound tile + popover (outputs, each app's volume, microphone); Microphone tile |
+| `omarchy.power` | Power mode tile; Battery tile + view (draw, capacity, cycles, charge limit) |
+| `omarchy.monitor` | Brightness slider + Screens view (each screen's brightness, scale, text size, laptop screen) |
+| `omarchy.tailscale` | Tailscale tile + view (machines, search, copy, send and receive files, exit nodes, accounts) |
+| `design-nexus.privacy-route` | VPN tile + view (direct / NordVPN / Tor, one at a time; NordVPN place, pause, technology; Tor mode, exit, bridges, browser, panic; NetworkManager VPNs) |
+| `harshith.system-monitor`, `mryll.meteobar`, `design-nexus.weather` | Nyx Status bar widget (glance) and the Activity and Weather apps (details) |
+| `omacal.upcoming` | Up next tile (Nyx Calendar's `agenda.sqlite`) |
+| `jankeesvw.notification-center` | Notification Center |
 
 Stay in the bar: menu, workspaces, active window, clock, indicators, system update,
 tray, keyboard layout, `design-nexus.ai-hub`, `flux`, `qs-bitwarden-cli`,
 `design-nexus.ticktick`, `design-nexus.obsidian-notes`, `omamail`,
-`caseonline.omarchy.office365`, `omarchy.dropbox`.
+`caseonline.omarchy.office365`, `omarchy.dropbox`, and (decided 2026-11-02)
+`ken.nyx-assistant` and `ken.omarchy-backup`.
 
 **The bar keeps glanceable information**; controls and details move to the Control
-Center. Read-only indicators stay in the bar: current temperature, CPU/RAM, and status
-icons for Wi-Fi, Bluetooth, volume and battery. Clicking any of them opens the Control
-Center (at the matching widget or detail view). They come from one small Nyx bar widget
-(`nyx.indicators`, QML) that reads the same providers as the Control Center, so weather
-and system load are fetched once, not by a bar plugin and the Control Center each. The
-existing weather and system-monitor plugins stay until it is in place.
-
-The resulting bar right side: tray, keyboard layout, the plugins above, the indicators,
-then the Notification Center bell and the Control Center button.
+Center. **Nyx Status** (`design-nexus.status`, QML, shipped with the Control Center)
+shows the temperature, CPU and memory (with the CPU temperature; GPU where sysfs has it;
+disk space on request) and the Wi-Fi, Bluetooth, volume and battery icons. It reads the
+shell's own services (Quickshell's Networking, Bluetooth, PipeWire, UPower) and `/proc`,
+so it adds no process; clicks open the Control Center on the matching view, Weather or
+Activity. Beside it: the Notification Center's bell and the Control Center button.
 
 ### 4.8 Settings
 One new **Desktop** group (the existing `desktop` section colour) with pages: Dock,
@@ -437,3 +440,29 @@ switches per second.
   closed socket in milestone 1); not run live, as it would end the user's session.
 - **Sleep and resume, logging out**: not run (they'd interrupt the user). All services are
   `PartOf=graphical-session.target` with `Restart=on-failure`.
+
+## 15. Control Center rework (2026-11-02)
+
+After the user tried it: everything was too big, so rows went from 82 to 48 px; toggles
+became icon-only; tiles got colours; tooltips say the state and what a click does, in a
+lighter style. Then everything the bar plugins did was brought in (§4.7, PARITY.md):
+
+- **New providers** (`nyx-providers`): `tailscale` (status, machines, exit nodes,
+  accounts, the Taildrop receiver), `routes` (NordVPN, Tor through `tormarchy`), `dns`
+  (DNS provider, band, portal, connection details from `omarchy-network-status`),
+  `display` (screens through Omarchy's commands), `calendar` (Nyx Calendar's agenda,
+  read-only, a published contract); `audio` gained microphones and who is recording,
+  `bluetooth` nearby devices, pairing and forgetting, `power` battery details.
+- **Brightness fix**: it set the first backlight (`nvidia_0`), not the one lighting the
+  laptop's screen (`intel_backlight`); it now goes through `omarchy-brightness-display`
+  for the focused screen (DDC monitors too).
+- **Layout migrations**: version 2 renamed the old `vpn` tile (it showed Tailscale) to
+  `tailscale` and added the new `vpn`; version 3 added `upcoming` and `microphone`.
+- **Lesson**: a tile mustn't hide itself in its own update. A hidden widget is never
+  mapped, so its subscription never starts and it never comes back; grey it out instead.
+- The suite's shared nyx-design revision moved up to `976fed9`, which the dock, Control
+  Center and Notification Center build against.
+
+Status: installed. Not yet tried by hand: the new controls (pairing, VPN switching, DNS
+with its polkit prompt, edit-mode dragging). Hyprland restart, sleep/resume and logout
+haven't been run live.
