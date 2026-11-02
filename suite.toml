@@ -793,7 +793,7 @@ supported_releases = []
 id = "notification-center"
 name = "nyx-notification-center"
 url = "https://github.com/design-nexus/nyx-notification-center.git"
-revision = "560c831f8082a63534d07bbc452baac655d01ff4"
+revision = "492285039ce1a4c315dd3bcd85f809ad6cce9dd0"
 status = "published"
 artifacts = []
 

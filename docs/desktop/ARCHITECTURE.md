@@ -337,3 +337,41 @@ Built in `nyx-notification-center` (approved mockup: nyx-design `2302785`).
   is up (Omarchy's command buttons keep working); "hide content when locked" waits for
   Nyx-drawn pop-ups and lock-screen surfaces.
 - Keys: Super + N (Notification Center), Super + D (Control Center).
+
+## 12. Notification Center, stage B (2026-11-01; built, not switched on)
+
+- **Two modes of `nyx-notifyd`** (`nyx-notifyd --mode`): *Omarchy* (stage A, the
+  default) and *Nyx*, where it serves `org.freedesktop.Notifications` itself (Notify,
+  CloseNotification, GetCapabilities `actions body icon-static persistence`,
+  GetServerInformation; NotificationClosed, ActionInvoked, ActivationToken). Switched
+  with `nyx-notification-center --use-nyx-popups` / `--use-omarchy-popups`, which also
+  puts `omarchy.notifications` in `disabledPlugins` (or takes it out), turns the bridge
+  plugin on or off, and restarts Omarchy's shell only if it keeps the bus name. If Nyx
+  doesn't get the name, it switches back on its own.
+- **Pop-ups** are drawn by the Notification Center process from `nyx-notifyd`'s `Popup` /
+  `PopupClosed` signals: top right, newest on top, at most four, held while hovered,
+  5 s / 8 s / until dismissed by urgency (Omarchy's timings). A pop-up timing out leaves
+  the notification **open** in the Inbox, so the app's own buttons keep working there;
+  it closes (and the app is told) when clicked, dismissed, cleared, withdrawn, or its
+  explicit timeout runs out. `transient` ones close with their pop-up. Do not disturb
+  still lets critical ones and verification codes through.
+- **Omarchy compatibility**: the bridge plugin `design-nexus.notifications` answers the
+  shell's `notifications` IPC (ping, isDnd, toggleDnd, setDnd, act, dismissOne,
+  dismissAll, invokeLast, invokeAction, keyboard, showHistory, dismiss, count) by calling
+  `nyx-notifyd`, so Super + comma and friends, `omarchy-toggle-notification-silencing`,
+  `-dismiss` and `-wait` keep working. Omarchy's hints (`omarchy-exec-argv`,
+  `omarchy-actions`, `omarchy-glyph`) are honoured; Do not disturb stays in
+  `quiet.json` with Omarchy's other fields kept.
+- **Compatibility suite**: `cargo test -p nyx-notifyd --test compat`, a private
+  `dbus-daemon` with scratch folders, nine tests including the real `notify-send` and
+  `omarchy-notification-send`.
+- **Known gaps after switching**: Omarchy's centre-bar Do not disturb indicator reads
+  Omarchy's own service, so it stops tracking (the Notification Center's bell shows it);
+  nothing on the lock screen; Omarchy's per-app snooze isn't carried over.
+- **Status (2026-11-01)**: installed, Omarchy mode. The user keeps Omarchy's
+  notifications and the old bar plugins for now.
+
+## 13. Deferred (2026-11-01)
+
+- **Desktop Widgets (milestone 5)**, with per-workspace wallpapers (§9.2). The widget
+  framework (`nyx-widgets`, `nyx-providers`) stays in `nyx-control-center` until then.
