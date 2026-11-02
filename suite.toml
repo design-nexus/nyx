@@ -740,3 +740,24 @@ packages = ["nyx-dock"]
 default = true
 version = "0.1.0"
 supported_releases = []
+
+# Control Center: the quick settings panel (a user service; the bar widgets are put in
+# place, not added to the bar).
+[[repositories]]
+id = "control-center"
+name = "nyx-control-center"
+url = "https://github.com/design-nexus/nyx-control-center.git"
+revision = "151aef9fc6d2e1c505055e97a2a1fc14b466e0e5"
+status = "published"
+artifacts = []
+
+[[applications]]
+id = "control-center"
+repository = "control-center"
+target_repository = "nyx-control-center"
+source = "."
+manifest = "Cargo.toml"
+packages = ["nyx-control-center"]
+default = true
+version = "0.1.0"
+supported_releases = []

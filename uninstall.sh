@@ -5,7 +5,7 @@
 #   ./uninstall.sh all --purge        remove every app and its settings and data
 set -euo pipefail
 
-ALL=(settings contacts activity torrents pdf notepad music media-player theater chat fonts archive office photos glimpse store git passwords weather news capture pulse containers share dock)
+ALL=(settings contacts activity torrents pdf notepad music media-player theater chat fonts archive office photos glimpse store git passwords weather news capture pulse containers share dock control-center)
 say() { printf '\033[1m==>\033[0m %s\n' "$*"; }
 die() { printf '\033[31m==>\033[0m %s\n' "$*" >&2; exit 1; }
 
@@ -37,6 +37,7 @@ for a in "${apps[@]}"; do
     pulse) bins="nyx-pulse nyx-pulse-glimpse" ids="Pulse" ;;
     share) bins="nyx-share nyx-share-daemon nyx-share-sheet" ids="Share" ;;
     dock) bins="nyx-dock" ids="" ;;
+    control-center) bins="nyx-control-center" ids="" ;;
     *) bins="nyx-$a" ids="${a^}" ;;
   esac
   if [[ $a == glimpse ]]; then
@@ -67,6 +68,16 @@ for a in "${apps[@]}"; do
     rm -f "$config/systemd/user/nyx-dock.service"
     systemctl --user daemon-reload 2>/dev/null || true
     [[ $purge == true ]] && rm -f "$config/nyx/dock.toml"
+  fi
+  if [[ $a == control-center ]]; then
+    systemctl --user disable --now nyx-control-center.service 2>/dev/null || true
+    rm -f "$config/systemd/user/nyx-control-center.service"
+    for p in design-nexus.control-center design-nexus.status; do
+      omarchy-plugin-disable "$p" >/dev/null 2>&1 || true
+      rm -rf "$config/omarchy/plugins/$p"
+    done
+    systemctl --user daemon-reload 2>/dev/null || true
+    [[ $purge == true ]] && rm -f "$config/nyx/control-center.toml"
   fi
   if [[ $a == share ]]; then
     systemctl --user stop nyx-share.service 2>/dev/null || true
