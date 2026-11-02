@@ -39,9 +39,9 @@ artifacts = []
 [[repositories]]
 id = "design"
 name = "nyx-design"
-dependency_revision = "9465abd2daa4433bc6ba47820417b57f62cdfb82"
+dependency_revision = "976fed940841a2a505ffe644f632cb60e12988a8"
 url = "https://github.com/design-nexus/nyx-design.git"
-revision = "9465abd2daa4433bc6ba47820417b57f62cdfb82"
+revision = "976fed940841a2a505ffe644f632cb60e12988a8"
 status = "published"
 artifacts = []
 
@@ -753,7 +753,7 @@ supported_releases = []
 id = "control-center"
 name = "nyx-control-center"
 url = "https://github.com/design-nexus/nyx-control-center.git"
-revision = "151aef9fc6d2e1c505055e97a2a1fc14b466e0e5"
+revision = "dfcda7e6712841442e1091ddc0e6a41aeedfb151"
 status = "published"
 artifacts = []
 
