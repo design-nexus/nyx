@@ -1,7 +1,7 @@
 # Bar plugins and what replaces them
 
 Before a bar plugin is removed, everything it does has to be somewhere in Nyx (decision
-§9.5 in ARCHITECTURE.md). ✓ done, ◐ partly, ✗ missing. Updated 2026-11-02 (nyx-control-center `5a65ca8`).
+§9.5 in ARCHITECTURE.md). ✓ done, ◐ partly, ✗ missing. Updated 2026-11-02 (nyx-control-center `dfcda7e`). Nothing is missing: every plugin above can be removed except the two that stay on the bar.
 
 | Plugin | Feature | Where in Nyx | |
 | --- | --- | --- | --- |
@@ -25,15 +25,16 @@ Before a bar plugin is removed, everything it does has to be somewhere in Nyx (d
 | | Send files to a machine | Tailscale view | ✓ |
 | | Exit node (Mullvad by country), accounts | Tailscale view | ✓ |
 | | Search the machine list; Mullvad by country, then city | Tailscale view | ✓ |
-| | Receive files (Taildrop) | — | ✗ |
+| | Receive files (Taildrop) | Tailscale view › Receive files (Omarchy's receiver service) | ✓ |
 | **design-nexus.privacy-route** | Direct / NordVPN / Tor, one at a time, "both on" warning | Control Center › VPN | ✓ |
 | | NordVPN country, kill switch, auto-connect | VPN view | ✓ |
 | | NordVPN city, pause, technology | VPN view | ✓ |
-| | NordVPN protocol (UDP/TCP, OpenVPN only) | — | ✗ |
+| | NordVPN protocol (UDP/TCP, OpenVPN only) | VPN view › Protocol | ✓ |
 | | Tor modes, new circuit, exit back to automatic | VPN view | ✓ |
 | | Tor exit country picker, latency, bridges, Tor-only browser, panic | VPN view (latency on request, not live) | ✓ |
 | **harshith.system-monitor** | CPU and memory at a glance | Nyx Status (bar); click opens Activity | ✓ |
-| | GPU, temperatures, network, disk; sparklines panel | Activity app (not at a glance) | ◐ |
+| | CPU temperature, GPU use and temperature, disk space at a glance | Nyx Status (GPU where sysfs has it: AMD, Intel Xe; not NVIDIA's driver) | ✓ |
+| | Network, disk activity, sparklines | Activity app | ✓ |
 | **mryll.meteobar**, **design-nexus.weather** | Temperature at a glance; forecast | Nyx Status; click opens Weather | ✓ |
 | **omacal.upcoming** | Upcoming events | Up next tile (Nyx Calendar's agenda) | ✓ |
 | **ken.nyx-assistant** | Assistant button and state | Stays on the bar (decided 2026-11-02) | — |
