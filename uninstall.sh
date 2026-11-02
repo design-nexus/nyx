@@ -5,7 +5,7 @@
 #   ./uninstall.sh all --purge        remove every app and its settings and data
 set -euo pipefail
 
-ALL=(settings contacts activity torrents pdf notepad music media-player theater chat fonts archive office photos glimpse store git passwords weather news capture pulse containers share dock control-center)
+ALL=(settings contacts activity torrents pdf notepad music media-player theater chat fonts archive office photos glimpse store git passwords weather news capture pulse containers share dock control-center notification-center)
 say() { printf '\033[1m==>\033[0m %s\n' "$*"; }
 die() { printf '\033[31m==>\033[0m %s\n' "$*" >&2; exit 1; }
 
@@ -38,6 +38,7 @@ for a in "${apps[@]}"; do
     share) bins="nyx-share nyx-share-daemon nyx-share-sheet" ids="Share" ;;
     dock) bins="nyx-dock" ids="" ;;
     control-center) bins="nyx-control-center" ids="" ;;
+    notification-center) bins="nyx-notification-center nyx-notifyd" ids="" ;;
     *) bins="nyx-$a" ids="${a^}" ;;
   esac
   if [[ $a == glimpse ]]; then
@@ -78,6 +79,15 @@ for a in "${apps[@]}"; do
     done
     systemctl --user daemon-reload 2>/dev/null || true
     [[ $purge == true ]] && rm -f "$config/nyx/control-center.toml"
+  fi
+  if [[ $a == notification-center ]]; then
+    systemctl --user disable --now nyx-notification-center.service nyx-notifyd.service 2>/dev/null || true
+    rm -f "$config/systemd/user/nyx-notification-center.service" "$config/systemd/user/nyx-notifyd.service" \
+      "$share/dbus-1/services/io.github.design_nexus.nyx.Notifications.service" "${XDG_STATE_HOME:-$HOME/.local/state}/nyx/notifications.json"
+    omarchy-plugin-disable design-nexus.notification-center >/dev/null 2>&1 || true
+    rm -rf "$config/omarchy/plugins/design-nexus.notification-center"
+    systemctl --user daemon-reload 2>/dev/null || true
+    [[ $purge == true ]] && rm -f "$share/nyx/notifications.db" "$share/nyx/notifications.db-wal" "$share/nyx/notifications.db-shm"
   fi
   if [[ $a == share ]]; then
     systemctl --user stop nyx-share.service 2>/dev/null || true

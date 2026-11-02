@@ -11,7 +11,7 @@ set -euo pipefail
 
 REPO="design-nexus/nyx"
 RAW="https://raw.githubusercontent.com/$REPO/main"
-ALL=(settings contacts activity torrents pdf notepad music media-player theater chat fonts archive office photos glimpse store git passwords weather news capture pulse containers files cloud notes calculator home maps transfer mail calendar reminders share dock control-center)
+ALL=(settings contacts activity torrents pdf notepad music media-player theater chat fonts archive office photos glimpse store git passwords weather news capture pulse containers files cloud notes calculator home maps transfer mail calendar reminders share dock control-center notification-center)
 bin="$HOME/.local/bin"
 
 # The program that shows an app is installed.

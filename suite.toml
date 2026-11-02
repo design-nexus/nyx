@@ -787,3 +787,23 @@ packages = ["nyx-accounts-service"]
 default = false
 version = "0.1.0"
 supported_releases = []
+
+# Notification Center: inbox, pins and history (stage A: Omarchy still shows the pop-ups).
+[[repositories]]
+id = "notification-center"
+name = "nyx-notification-center"
+url = "https://github.com/design-nexus/nyx-notification-center.git"
+revision = "949e5fdf30735dca0c1050d65e1c41588e2581f0"
+status = "published"
+artifacts = []
+
+[[applications]]
+id = "notification-center"
+repository = "notification-center"
+target_repository = "nyx-notification-center"
+source = "."
+manifest = "Cargo.toml"
+packages = ["nyx-notification-center", "nyx-notifyd"]
+default = true
+version = "0.1.0"
+supported_releases = []
