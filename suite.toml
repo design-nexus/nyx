@@ -227,7 +227,7 @@ artifacts = []
 id = "settings"
 name = "nyx-settings"
 url = "https://github.com/design-nexus/nyx-settings.git"
-revision = "e74f7a04a1359d38c0b52e02dcb962234a7918b2"
+revision = "1943fc6f7448f13110983417e2b79ff97d388b56"
 status = "published"
 artifacts = []
 
@@ -793,7 +793,7 @@ supported_releases = []
 id = "notification-center"
 name = "nyx-notification-center"
 url = "https://github.com/design-nexus/nyx-notification-center.git"
-revision = "492285039ce1a4c315dd3bcd85f809ad6cce9dd0"
+revision = "f863c15d1f4a605c7de529bb04430a91a59399cc"
 status = "published"
 artifacts = []
 

@@ -375,3 +375,65 @@ Built in `nyx-notification-center` (approved mockup: nyx-design `2302785`).
 
 - **Desktop Widgets (milestone 5)**, with per-workspace wallpapers (§9.2). The widget
   framework (`nyx-widgets`, `nyx-providers`) stays in `nyx-control-center` until then.
+
+## 14. Milestone 6 (2026-11-01)
+
+### Settings pages
+
+Nyx Settings → Desktop gains **Dock**, **Control Center** and **Notifications** (nyx-settings
+`1943fc6`), each shown only when its program is installed and changing it the way the
+program does: `dock.toml` (the dock reloads it; the options appear once the dock has
+written it on first start) and `nyx-dock --enable/--disable`; the Control Center's
+layout file plus a restart of its hidden service; `nyx-notifyd`'s settings over
+`Notifications1` (through `busctl`, so Settings links against nothing of the Notification
+Center's), including who shows pop-ups. Our bar widgets get on/off switches.
+
+### Measurements
+
+Laptop (Intel Core Ultra 9 285H; GTK on the Intel GPU), release builds, test copies on
+the headless output only, while the user worked normally. Scripts: `docs/desktop/bench/`.
+"GPU" is the buffers the process holds (DRM `fdinfo`, `drm-total-*`). Wakeups are context
+switches per second.
+
+| Process | Private memory | GPU | CPU (idle) | Wakeups |
+| --- | --- | --- | --- | --- |
+| Control Center, hidden | 10 MiB | 52 MiB once opened (0 before) | 0.00 s / 30 s | 1/s |
+| Notification Center, hidden | 10 MiB | 0 | 0.01 s / 30 s | 1/s |
+| nyx-notifyd | 8 MiB | 0 | 0.00 s / 30 s | 2/s |
+| *Omarchy's shell, same moment* | *453 MiB* | *508 MiB* | *2.02 s / 30 s* | *381/s* |
+
+| Shown on one screen | 2048×1280 @1.6 | 3840×2160 @1 |
+| --- | --- | --- |
+| Dock: private / GPU | 61 / 28 MiB | 42 / 23 MiB |
+| Dock: CPU, wakeups (while the user worked) | 1 % of a core, 148/s | 0.5 %, 131/s |
+| Dock: window arrives or leaves → redrawn | 5–23 ms | 5–26 ms |
+| Control Center open: private / GPU | 41 / 45 MiB | 60 / 83 MiB |
+| Control Center: cold start → on screen | 175 ms | 163 ms |
+| Notification Center open: private / GPU | 63 / 39 MiB | 62 / 69 MiB |
+| Notification Center: cold start → on screen | 111 ms | 127 ms |
+
+- The dock's wakeups follow Hyprland's events: it recomputes on focus, window and
+  workspace changes (never on title-only ones) and rebuilds widgets only when what it shows
+  changed. With nobody at the desktop it's near zero (milestone 1's watcher: about 1
+  event a second).
+- Opening a panel that's already running is one `set_visible`: a frame, not a start.
+- **Two 4K screens**: the dock draws one surface per screen in one process, so a second
+  4K screen adds about one more dock surface (~23 MiB GPU, a few MiB private); the panels
+  are on one screen at a time, so they don't change. (Measured on one 4K output; a second
+  wasn't created, to keep test outputs to one.)
+
+### Reliability passes
+
+- **Screen unplugged and plugged in** (a temporary headless output, the dock on it): the
+  dock leaves with the screen and comes back with it, one dock and one edge strip after
+  three quick unplug–replug cycles; the process never stopped.
+- **nyx-notifyd restarting under the panel** (Nyx mode, private bus): the panel stays up,
+  the next notification after the restart pops up, history keeps both. A notification
+  sent while it was down was refused, so Nyx mode now installs D-Bus activation for
+  `org.freedesktop.Notifications` (through systemd); switching back removes it.
+- **One nyx-notifyd at a time**: a second copy now exits instead of taking the running
+  one's name (an old build started by hand had taken it and systemd stopped the service).
+- **Hyprland restarting**: the `nyx-desktop` watcher reconnects (unit-tested over a
+  closed socket in milestone 1); not run live, as it would end the user's session.
+- **Sleep and resume, logging out**: not run (they'd interrupt the user). All services are
+  `PartOf=graphical-session.target` with `Restart=on-failure`.
