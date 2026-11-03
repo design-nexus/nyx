@@ -206,6 +206,9 @@ class Logos:
 def refresh():
     for executable, args in [('gtk-update-icon-cache', ['-f', '-t', '-q', str(DATA / 'icons/hicolor')]),
                              ('update-desktop-database', [str(APPS)])]:
+        # Without launchers of its own the user has no desktop database to update.
+        if executable == 'update-desktop-database' and not APPS.is_dir():
+            continue
         if shutil.which(executable):
             result = subprocess.run([executable, *args], capture_output=True, text=True)
             if result.returncode:
