@@ -227,7 +227,7 @@ artifacts = []
 id = "settings"
 name = "nyx-settings"
 url = "https://github.com/design-nexus/nyx-settings.git"
-revision = "c1993a2c76ab5a058b3e38b1db0ca05f52aa211c"
+revision = "a363516606da2e27e490ba1cf673d6cf0f0f257f"
 status = "published"
 artifacts = []
 
@@ -833,7 +833,7 @@ supported_releases = []
 id = "switcher"
 name = "nyx-switcher"
 url = "https://github.com/design-nexus/nyx-switcher.git"
-revision = "6deba5013d57b763e5377f2666ef526df659cfbc"
+revision = "98425c61f15c4558308b0c8ab75a1a8bb6165dcc"
 status = "published"
 artifacts = []
 
