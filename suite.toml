@@ -227,7 +227,7 @@ artifacts = []
 id = "settings"
 name = "nyx-settings"
 url = "https://github.com/design-nexus/nyx-settings.git"
-revision = "9b977276dcdcf466c51796af8388078e7830ccff"
+revision = "c21f8dfef31dd8c2e9e694cd2407faebfd5999fb"
 status = "published"
 artifacts = []
 
@@ -732,7 +732,7 @@ supported_releases = []
 id = "dock"
 name = "nyx-dock"
 url = "https://github.com/design-nexus/nyx-dock.git"
-revision = "4a695b78c6df50960ce922620bd6170dc5ac6e88"
+revision = "a3b0e61420aa0eacddbf89ecea35b70194145391"
 status = "published"
 artifacts = []
 
