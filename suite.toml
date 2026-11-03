@@ -651,7 +651,7 @@ supported_releases = []
 id = "mail"
 name = "nyx-mail"
 url = "https://github.com/design-nexus/nyx-mail.git"
-revision = "cadb6dee9a1cf8ec8122a20fdf0b60d97d519786"
+revision = "a8a909a604dcb61885f3a740c7a80caf628491b9"
 status = "published"
 artifacts = []
 
