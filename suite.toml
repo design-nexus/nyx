@@ -833,7 +833,7 @@ supported_releases = []
 id = "switcher"
 name = "nyx-switcher"
 url = "https://github.com/design-nexus/nyx-switcher.git"
-revision = "44834aba66755eff1d71449d8f4009597c7e36bd"
+revision = "5e7380e05fa03e96069510402f2a4d2ba0a74bff"
 status = "published"
 artifacts = []
 
