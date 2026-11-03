@@ -753,7 +753,7 @@ supported_releases = []
 id = "control-center"
 name = "nyx-control-center"
 url = "https://github.com/design-nexus/nyx-control-center.git"
-revision = "7cab3167d3eab0ef0820d71630be5bd75870199b"
+revision = "fc94d007d07c3d62577f57b6422e4c4dc96ca778"
 status = "published"
 artifacts = []
 
