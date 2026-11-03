@@ -732,7 +732,7 @@ supported_releases = []
 id = "dock"
 name = "nyx-dock"
 url = "https://github.com/design-nexus/nyx-dock.git"
-revision = "a3b0e61420aa0eacddbf89ecea35b70194145391"
+revision = "81ae94470864fcaf515f413594242f3f1f2b38cc"
 status = "published"
 artifacts = []
 
