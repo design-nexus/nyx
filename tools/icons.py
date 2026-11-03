@@ -24,6 +24,9 @@ UNITS = CONFIG / 'systemd/user'
 NYX = HOME / '.local/bin/nyx'
 NYX_ICON = 'io.github.design_nexus.nyx.{}.svg'
 HOOK_MARK = '# Installed by nyx icons follow on'
+# Set where the system supplies nyx-icons.path and nyx-icons.service (NyxOS), so
+# `follow` only switches following on and off.
+MANAGED_UNITS = os.environ.get('NYX_ICONS_MANAGED_UNITS') == '1'
 # A read-only check must not create bytecode next to the bundled renderer.
 sys.dont_write_bytecode = True
 
@@ -112,6 +115,19 @@ def discover(records):
             found[identity] = path
     # Keep local originals available even while their Icon points at a managed asset.
     return found
+
+
+def system_icons():
+    """Icon folders of packages installed outside the user's data folder."""
+    return [Path(p) / 'icons/hicolor/scalable/apps' for p in os.environ.get(
+        'XDG_DATA_DIRS', '/usr/local/share:/usr/share').split(':') if p]
+
+
+def installed_nyx_icon(name):
+    """The icon a Nyx app installed: the user's copy, else a system package's."""
+    if (OUTPUT / name).is_file():
+        return OUTPUT / name
+    return next((d / name for d in system_icons() if (d / name).is_file()), None)
 
 
 def assets():
@@ -251,14 +267,17 @@ def run(action, quiet=False):
         theme = theme_tools.load(asset_dir, follow=following())
         tile = renderer.tile_for(theme['bg'], theme['text'], theme['light'])
         palette = digest(json.dumps([tile, theme['swatches']], sort_keys=True))
-        # Nyx's own icons, as installed by each app: recoloured in place.
+        # Nyx's own icons, as installed by each app: recoloured in place. Icons from
+        # system packages can't be changed; their recoloured copy goes in the user's
+        # folder, which icon lookup prefers.
         for glyph_id, glyph in glyphs.items():
             path = OUTPUT / NYX_ICON.format(glyph_id)
-            if not path.is_file():
+            installed = installed_nyx_icon(path.name)
+            if installed is None:
                 continue
             family = renderer.family(glyph['light'])
             svg = renderer.themed(glyph, theme_tools.icon_accent(theme, theme_tools.accent_key(glyph_id), family), tile)
-            if path.read_text() == svg:
+            if installed.read_text() == svg:
                 report('current', glyph_id)
             elif action == 'check':
                 report('outdated', glyph_id)
@@ -386,25 +405,27 @@ def follow(on):
     service, path, hook = units()
     if on:
         (STATE / 'follow-off').unlink(missing_ok=True)
-        if (CONFIG / 'omarchy').is_dir():
-            write_if_changed(HOOK, hook, 0o755)
         # A watch on a missing folder stops systemd seeing changes beside it.
         (CONFIG / 'nyx/themes').mkdir(parents=True, exist_ok=True)
-        write_if_changed(UNITS / 'nyx-icons.service', service, 0o644)
-        write_if_changed(UNITS / 'nyx-icons.path', path, 0o644)
-        systemctl('daemon-reload')
-        systemctl('enable', 'nyx-icons.path')
-        systemctl('reset-failed', 'nyx-icons.path', 'nyx-icons.service')
-        # A running path unit keeps its old watches until restarted.
-        systemctl('restart', 'nyx-icons.path')
+        if not MANAGED_UNITS:
+            if (CONFIG / 'omarchy').is_dir():
+                write_if_changed(HOOK, hook, 0o755)
+            write_if_changed(UNITS / 'nyx-icons.service', service, 0o644)
+            write_if_changed(UNITS / 'nyx-icons.path', path, 0o644)
+            systemctl('daemon-reload')
+            systemctl('enable', 'nyx-icons.path')
+            systemctl('reset-failed', 'nyx-icons.path', 'nyx-icons.service')
+            # A running path unit keeps its old watches until restarted.
+            systemctl('restart', 'nyx-icons.path')
     else:
-        if (UNITS / 'nyx-icons.path').exists():
-            systemctl('disable', '--now', 'nyx-icons.path')
-        for unit in ['nyx-icons.path', 'nyx-icons.service']:
-            (UNITS / unit).unlink(missing_ok=True)
-        if HOOK.is_file() and HOOK_MARK in HOOK.read_text():
-            HOOK.unlink()
-        systemctl('daemon-reload')
+        if not MANAGED_UNITS:
+            if (UNITS / 'nyx-icons.path').exists():
+                systemctl('disable', '--now', 'nyx-icons.path')
+            for unit in ['nyx-icons.path', 'nyx-icons.service']:
+                (UNITS / unit).unlink(missing_ok=True)
+            if HOOK.is_file() and HOOK_MARK in HOOK.read_text():
+                HOOK.unlink()
+            systemctl('daemon-reload')
         STATE.mkdir(parents=True, exist_ok=True)
         (STATE / 'follow-off').touch()
     print('Icons follow the theme.' if on else 'Icons use the Nyx Dark look.')

@@ -25,10 +25,12 @@ class IconCommands(unittest.TestCase):
         self.output = root / 'icons/hicolor/scalable/apps'
         self.config = root / 'config'
         self.refreshes = []
+        self.system_icons = root / 'system-icons'
         self.patch = patch.multiple(icons, DATA=root, APPS=self.user, STATE=self.state, OUTPUT=self.output,
                                     CONFIG=self.config, UNITS=self.config / 'systemd/user',
                                     HOOK=self.config / 'omarchy/hooks/theme-set.d/40-nyx-icons',
                                     roots=lambda: [self.user, self.system],
+                                    system_icons=lambda: [self.system_icons],
                                     refresh=lambda: self.refreshes.append(1), systemctl=lambda *args: None)
         self.patch.start()
         self.addCleanup(self.patch.stop)
@@ -225,6 +227,31 @@ class IconCommands(unittest.TestCase):
         self.assertFalse((icons.UNITS / 'nyx-icons.path').exists())
         _, _, _, glyphs = icons.assets()
         self.assertEqual(self.nyx_icon('Files'), renderer.render_glyph(glyphs['Files']))
+
+    def test_system_icons_get_a_user_copy(self):
+        # Apps installed by the system (NyxOS) leave their icon outside the user's folder.
+        _, renderer, _, glyphs = icons.assets()
+        self.system_icons.mkdir()
+        shipped = renderer.render_glyph(glyphs['Files'])
+        (self.system_icons / icons.NYX_ICON.format('Files')).write_text(shipped)
+        self.suite('mode = "theme"\ntheme = "nyx-dark"\n')
+        self.assertIn('1 current', self.run_command('sync')[1])
+        self.assertFalse(self.output.exists())
+        self.suite('mode = "theme"\ntheme = "nyx-light"\n')
+        self.assertIn('recoloured: Files', self.run_command('sync')[1])
+        self.assertIn(renderer.tile_for('#f7f7f8', '#18181b', True)['tile_top'], self.nyx_icon('Files'))
+        self.assertEqual((self.system_icons / icons.NYX_ICON.format('Files')).read_text(), shipped)
+        self.assertIn('1 current', self.run_command('sync')[1])
+
+    def test_follow_with_managed_units(self):
+        (self.config / 'omarchy').mkdir(parents=True)
+        with patch.object(icons, 'MANAGED_UNITS', True), contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(icons.follow(False), 0)
+            self.assertTrue((self.state / 'follow-off').exists())
+            self.assertEqual(icons.follow(True), 0)
+        self.assertFalse((self.state / 'follow-off').exists())
+        self.assertFalse(icons.UNITS.exists())
+        self.assertFalse(icons.HOOK.exists())
 
 
 if __name__ == '__main__':
