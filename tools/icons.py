@@ -346,6 +346,17 @@ def run(action, quiet=False):
     return 1 if 'error' in counts or conflicts else 0
 
 
+def sync(quiet=False):
+    """Recolour for the theme, again if it changed while recolouring: a change
+    made during a run is folded into that run by systemd, not started anew."""
+    for _ in range(3):
+        before = theme_tools.stamp()
+        status = run('sync', quiet)
+        if theme_tools.stamp() == before:
+            break
+    return status
+
+
 def systemctl(*args):
     if not shutil.which('systemctl'):
         return
@@ -356,8 +367,10 @@ def systemctl(*args):
 
 def units():
     command = f'{NYX} icons sync --quiet'
-    service = ('[Unit]\nDescription=Recolour Nyx icons for the current theme\n\n'
-               f'[Service]\nType=oneshot\nExecStart={command}\n')
+    # Bursts (clicking through swatches, an app copying several icons) must not hit
+    # systemd's start limit; the pause lets one sync cover the whole burst.
+    service = ('[Unit]\nDescription=Recolour Nyx icons for the current theme\nStartLimitIntervalSec=0\n\n'
+               f'[Service]\nType=oneshot\nExecStartPre=/usr/bin/sleep 1\nExecStart={command}\n')
     # Folders, not theme.toml itself: apps replace it by rename, which a file watch misses.
     watch = ''.join(f'PathChanged={path}\n' for path in [CONFIG / 'nyx', CONFIG / 'nyx/themes', OUTPUT])
     path = ('[Unit]\nDescription=Recolour Nyx icons when the Nyx theme changes or an app installs its icon\n\n'
@@ -381,6 +394,7 @@ def follow(on):
         write_if_changed(UNITS / 'nyx-icons.path', path, 0o644)
         systemctl('daemon-reload')
         systemctl('enable', 'nyx-icons.path')
+        systemctl('reset-failed', 'nyx-icons.path', 'nyx-icons.service')
         # A running path unit keeps its old watches until restarted.
         systemctl('restart', 'nyx-icons.path')
     else:
@@ -394,7 +408,7 @@ def follow(on):
         STATE.mkdir(parents=True, exist_ok=True)
         (STATE / 'follow-off').touch()
     print('Icons follow the theme.' if on else 'Icons use the Nyx Dark look.')
-    return run('sync', quiet=True)
+    return sync(quiet=True)
 
 
 def main():
@@ -415,6 +429,8 @@ def main():
             fcntl.flock(lock, fcntl.LOCK_EX if wait else fcntl.LOCK_EX | fcntl.LOCK_NB)
             if args.action == 'follow':
                 return follow(args.state == 'on')
+            if args.action == 'sync':
+                return sync(args.quiet)
             return run(args.action, args.quiet)
     except (OSError, ValueError) as error:
         print(f'nyx icons: {error}', file=sys.stderr)

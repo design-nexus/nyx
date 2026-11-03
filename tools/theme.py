@@ -147,6 +147,21 @@ def resolve(shipped):
     return theme
 
 
+def stamp():
+    """Identity and change time of every file the theme is read from."""
+    paths = [CONFIG / 'nyx/theme.toml', STATE / 'omarchy/current/theme/colors.toml']
+    folder = CONFIG / 'nyx/themes'
+    paths += sorted(folder.glob('*.toml')) if folder.is_dir() else []
+    out = []
+    for path in paths:
+        try:
+            info = path.stat()
+            out.append((str(path), info.st_ino, info.st_mtime_ns))
+        except OSError:
+            out.append((str(path), None, None))
+    return out
+
+
 def load(asset_dir, follow=True):
     """The active theme, or Nyx Dark as shipped when icons don't follow it."""
     shipped = json.loads((Path(asset_dir) / 'themes.json').read_text())

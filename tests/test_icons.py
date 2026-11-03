@@ -186,6 +186,24 @@ class IconCommands(unittest.TestCase):
         self.assertNotEqual(dark, asset.read_text())
         self.assertEqual(set(self.records()), {'firefox.desktop', 'custom.desktop'})
 
+    def test_sync_follows_a_change_made_during_it(self):
+        self.suite('mode = "theme"\ntheme = "nyx-dark"\n')
+        renderer = self.install_nyx_icons('Files')
+        real, calls = icons.run, []
+        def run(action, quiet=False):
+            status = real(action, quiet)
+            if not calls:
+                # An app saves a new theme while the first pass is running.
+                new = self.config / 'nyx/theme.toml.new'
+                new.write_text('mode = "theme"\ntheme = "nyx-light"\n')
+                new.replace(self.config / 'nyx/theme.toml')
+            calls.append(action)
+            return status
+        with patch.object(icons, 'run', run), contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(icons.sync(), 0)
+        self.assertEqual(calls, ['sync', 'sync'])
+        self.assertIn(renderer.tile_for('#f7f7f8', '#18181b', True)['tile_top'], self.nyx_icon('Files'))
+
     def test_follow_on_and_off(self):
         self.suite('mode = "theme"\ntheme = "nyx-light"\n')
         (self.config / 'omarchy').mkdir()
@@ -195,7 +213,10 @@ class IconCommands(unittest.TestCase):
         path_unit = (icons.UNITS / 'nyx-icons.path').read_text()
         self.assertIn(f'PathChanged={self.config}/nyx\n', path_unit)
         self.assertIn(f'PathChanged={self.output}', path_unit)
-        self.assertIn('icons sync --quiet', (icons.UNITS / 'nyx-icons.service').read_text())
+        service = (icons.UNITS / 'nyx-icons.service').read_text()
+        self.assertIn('icons sync --quiet', service)
+        self.assertIn('StartLimitIntervalSec=0', service)
+        self.assertIn('ExecStartPre=/usr/bin/sleep 1', service)
         self.assertIn('icons sync --quiet', icons.HOOK.read_text())
         self.assertNotIn(renderer.TILE['tile_top'], self.nyx_icon('Files'))
         with contextlib.redirect_stdout(io.StringIO()):
