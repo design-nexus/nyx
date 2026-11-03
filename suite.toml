@@ -30,9 +30,9 @@ mode = "self"
 [[repositories]]
 id = "core"
 name = "nyx-core"
-dependency_revision = "9dc196245bbf0ccc93b8bf04ac61bb476b85e4d5"
+dependency_revision = "1c309f2912d5eff5e1a3f5eeca8b91cc3c5bcf76"
 url = "https://github.com/design-nexus/nyx-core.git"
-revision = "9dc196245bbf0ccc93b8bf04ac61bb476b85e4d5"
+revision = "1c309f2912d5eff5e1a3f5eeca8b91cc3c5bcf76"
 status = "published"
 artifacts = []
 
