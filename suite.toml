@@ -30,9 +30,9 @@ mode = "self"
 [[repositories]]
 id = "core"
 name = "nyx-core"
-dependency_revision = "a3b8fdf1d592ed9e44531747c70dfb49d65077b8"
+dependency_revision = "ce9cdf835790b2347a3bc5d65ef2d45f634132d5"
 url = "https://github.com/design-nexus/nyx-core.git"
-revision = "a3b8fdf1d592ed9e44531747c70dfb49d65077b8"
+revision = "ce9cdf835790b2347a3bc5d65ef2d45f634132d5"
 status = "published"
 artifacts = []
 
@@ -227,7 +227,7 @@ artifacts = []
 id = "settings"
 name = "nyx-settings"
 url = "https://github.com/design-nexus/nyx-settings.git"
-revision = "c21f8dfef31dd8c2e9e694cd2407faebfd5999fb"
+revision = "c1993a2c76ab5a058b3e38b1db0ca05f52aa211c"
 status = "published"
 artifacts = []
 
@@ -833,7 +833,7 @@ supported_releases = []
 id = "switcher"
 name = "nyx-switcher"
 url = "https://github.com/design-nexus/nyx-switcher.git"
-revision = "acff39f5826871b7bce7e7fc09fd56a3208c7bc0"
+revision = "6deba5013d57b763e5377f2666ef526df659cfbc"
 status = "published"
 artifacts = []
 

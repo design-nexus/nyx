@@ -102,7 +102,9 @@ nyx-dock  nyx-control-   nyx-notification-  nyx-desktop-
   prefix and is invisible to dock counts, widgets and wallpapers.
 - Omarchy workspace mode: read `workspace-layouts/<id>.lua` and default; watch that
   folder with inotify (the Omarchy dock is told over shell IPC; we can't be).
-- Panel coordination helper, workspace-profile config (`~/.config/nyx/desktop/*.toml`),
+- Panel coordination helper, workspace profiles (`~/.config/nyx/desktop/profiles/<id>.toml`,
+  done 2026-11-03: named sets applied by Settings; widgets and wallpaper keys go in a
+  profile's `[[workspace]]` entries),
   and thin async clients for NetworkManager, BlueZ, UPower, power-profiles-daemon,
   WirePlumber/PipeWire and MPRIS, so the five apps share one implementation.
 - Later, the six hand-written Hyprland loops in other apps can move to it (not in scope).
