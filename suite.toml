@@ -30,9 +30,9 @@ mode = "self"
 [[repositories]]
 id = "core"
 name = "nyx-core"
-dependency_revision = "1c309f2912d5eff5e1a3f5eeca8b91cc3c5bcf76"
+dependency_revision = "2dae114649367bfe5ad9239562429457087b1076"
 url = "https://github.com/design-nexus/nyx-core.git"
-revision = "1c309f2912d5eff5e1a3f5eeca8b91cc3c5bcf76"
+revision = "2dae114649367bfe5ad9239562429457087b1076"
 status = "published"
 artifacts = []
 
@@ -732,7 +732,7 @@ supported_releases = []
 id = "dock"
 name = "nyx-dock"
 url = "https://github.com/design-nexus/nyx-dock.git"
-revision = "e2d17bfbfdd698fb4ad211501c31c2b1c19115d1"
+revision = "5618ca97895727fa721c1653bce82f511d64a71d"
 status = "published"
 artifacts = []
 
@@ -824,6 +824,26 @@ target_repository = "nyx-clipboard"
 source = "."
 manifest = "Cargo.toml"
 packages = ["nyx-clipboard", "nyx-clipboardd", "nyx-clipboard-settings"]
+default = true
+version = "0.1.0"
+supported_releases = []
+
+# Switcher: window and app switching (Alt+Tab, Super+Tab, Alt+`; a user service).
+[[repositories]]
+id = "switcher"
+name = "nyx-switcher"
+url = "https://github.com/design-nexus/nyx-switcher.git"
+revision = "44834aba66755eff1d71449d8f4009597c7e36bd"
+status = "published"
+artifacts = []
+
+[[applications]]
+id = "switcher"
+repository = "switcher"
+target_repository = "nyx-switcher"
+source = "."
+manifest = "Cargo.toml"
+packages = ["nyx-switcher"]
 default = true
 version = "0.1.0"
 supported_releases = []

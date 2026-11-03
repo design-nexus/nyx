@@ -5,7 +5,7 @@
 #   ./uninstall.sh all --purge        remove every app and its settings and data
 set -euo pipefail
 
-ALL=(settings contacts activity torrents pdf notepad music media-player theater chat fonts archive office photos glimpse store git passwords weather news capture pulse containers share dock control-center notification-center clipboard)
+ALL=(settings contacts activity torrents pdf notepad music media-player theater chat fonts archive office photos glimpse store git passwords weather news capture pulse containers share dock control-center notification-center clipboard switcher)
 say() { printf '\033[1m==>\033[0m %s\n' "$*"; }
 die() { printf '\033[31m==>\033[0m %s\n' "$*" >&2; exit 1; }
 
@@ -40,6 +40,7 @@ for a in "${apps[@]}"; do
     control-center) bins="nyx-control-center" ids="" ;;
     notification-center) bins="nyx-notification-center nyx-notifyd" ids="" ;;
     clipboard) bins="nyx-clipboard nyx-clipboardd nyx-clipboard-settings" ids="Clipboard" ;;
+    switcher) bins="nyx-switcher nyx-switcher-send" ids="Switcher" ;;
     *) bins="nyx-$a" ids="${a^}" ;;
   esac
   if [[ $a == glimpse ]]; then
@@ -100,6 +101,14 @@ for a in "${apps[@]}"; do
     systemctl --user daemon-reload 2>/dev/null || true
     [[ $purge == true ]] && rm -rf "$share/nyx/clipboard.db" "$share/nyx/clipboard.db-wal" "$share/nyx/clipboard.db-shm" \
       "$share/nyx-clipboard" "$config/nyx-clipboard" "${XDG_CACHE_HOME:-$HOME/.cache}/nyx-clipboard"
+  fi
+  if [[ $a == switcher ]]; then
+    # Give Alt+Tab and Super+Tab back to Omarchy before the program goes.
+    [[ -x $bin/nyx-switcher ]] && "$bin/nyx-switcher" --unintegrate || true
+    systemctl --user disable --now nyx-switcher.service 2>/dev/null || true
+    rm -f "$config/systemd/user/nyx-switcher.service"
+    systemctl --user daemon-reload 2>/dev/null || true
+    [[ $purge == true ]] && rm -f "$config/nyx/switcher.toml"
   fi
   if [[ $a == share ]]; then
     systemctl --user stop nyx-share.service 2>/dev/null || true
