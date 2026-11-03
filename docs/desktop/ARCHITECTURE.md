@@ -198,7 +198,7 @@ out of the bar. The feature-by-feature record is [PARITY.md](PARITY.md) (complet
 | `omarchy.power` | Power mode tile; Battery tile + view (draw, capacity, cycles, charge limit) |
 | `omarchy.monitor` | Brightness slider + Screens view (each screen's brightness, scale, text size, laptop screen) |
 | `omarchy.tailscale` | Tailscale tile + view (machines, search, copy, send and receive files, exit nodes, accounts) |
-| `design-nexus.privacy-route` | VPN tile + view (direct / NordVPN / Tor, one at a time; NordVPN place, pause, technology; Tor mode, exit, bridges, browser, panic; NetworkManager VPNs) |
+| `design-nexus.privacy-route` | VPN tile + view: any VPN service (NordVPN, ExpressVPN, PIA, Mullvad, Proton VPN through their tools; any NetworkManager WireGuard/OpenVPN connection) or Tor, one at a time; location search; NordVPN's pause, technology, protocol; Tor's mode, exit, bridges, browser, panic. Setup in Settings › Online Accounts › VPN |
 | `harshith.system-monitor`, `mryll.meteobar`, `design-nexus.weather` | Nyx Status bar widget (glance) and the Activity and Weather apps (details) |
 | `omacal.upcoming` | Up next tile (Nyx Calendar's `agenda.sqlite`) |
 | `jankeesvw.notification-center` | Notification Center |
@@ -466,3 +466,13 @@ lighter style. Then everything the bar plugins did was brought in (§4.7, PARITY
 Status: installed. Not yet tried by hand: the new controls (pairing, VPN switching, DNS
 with its polkit prompt, edit-mode dragging). Hyprland restart, sleep/resume and logout
 haven't been run live.
+
+### Universal VPN (2026-11-02)
+
+The VPN tile isn't NordVPN's: `nyx-providers::vpn` finds every service set up (each
+provider's own tool, or NetworkManager VPN/WireGuard connections for providers without
+one) and keeps one connected at a time, Tor included. Adding a service is in Nyx Settings
+› Online Accounts › VPN (nyx-settings `9e93615`): install (AUR in a terminal, or the
+provider's page), sign in the tool's way, or import a `.conf`/`.ovpn` file. The sign-in
+service (nyx-accounts) isn't involved: VPN sign-ins are each tool's own. ExpressVPN's
+status and Proton's CLI (beta) follow their documented commands and are untested here.
