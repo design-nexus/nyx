@@ -215,6 +215,40 @@ def refresh():
                 print(f'Warning: {executable}: {result.stderr.strip()}', file=sys.stderr)
 
 
+def umbra_command():
+    """The Umbra icon themes' command, when they're installed and in use."""
+    exe = shutil.which('umbra-icons') or str(HOME / '.local/bin/umbra-icons')
+    try:
+        settings = json.loads((CONFIG / 'umbra/settings.json').read_text())
+    except (OSError, ValueError):
+        return None
+    return exe if Path(exe).is_file() and settings.get('look') else None
+
+
+def umbra(theme, report):
+    """Rebuild Umbra in the Nyx theme's colours, so folder and file icons match it."""
+    exe = umbra_command()
+    if not exe:
+        return
+    palette = {'name': 'Nyx', 'light': theme['light'], 'bg': theme['bg'], 'text': theme['text'],
+               'accent': theme['accent'], 'swatches': {k: v for k, v in theme['swatches'].items()
+                                                       if k in theme_tools.SWATCH_NAMES}}
+    path = STATE / 'umbra-palette.json'
+    written = write_if_changed(path, json.dumps(palette, indent=2, sort_keys=True) + '\n')
+    built = DATA / 'icons/Umbra/umbra.json'
+    try:
+        current = json.loads(built.read_text()).get('palette', {})
+        stale = any(current.get(k) != palette[k] for k in ('light', 'bg', 'text', 'accent', 'swatches'))
+    except (OSError, ValueError):
+        stale = True
+    if not (written or stale):
+        report('current', 'Umbra')
+        return
+    result = subprocess.run([exe, 'refresh', '--palette', str(path), '--quiet'], capture_output=True, text=True)
+    report('recoloured' if result.returncode == 0 else 'error', 'Umbra' if result.returncode == 0
+           else f'Umbra: {result.stderr.strip()}')
+
+
 def save(records):
     atomic(STATE / 'manifest.json', json.dumps({'version': 1, 'entries': records}, indent=2) + '\n')
 
@@ -361,6 +395,8 @@ def run(action, quiet=False):
                 report('conflict (launcher edited; left intact)', identity)
         if changed:
             refresh()
+        if action in ('sync', 'generate'):
+            umbra(theme, report)
     if not quiet:
         print(', '.join(f'{value} {key}' for key, value in counts.items()) or 'No matching applications.')
     # Edited launchers are the user's choice; automatic syncs don't fail over them.

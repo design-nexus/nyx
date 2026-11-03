@@ -146,6 +146,25 @@ class IconCommands(unittest.TestCase):
         self.assertIn(renderer.glyph_colors('#89b4fa')[0], self.nyx_icon('Files'))
         self.assertIn(renderer.glyph_colors('#94e2d5')[0], self.nyx_icon('Weather'))
 
+    def test_umbra_rebuilt_in_the_theme_colours(self):
+        self.suite('mode = "theme"\ntheme = "nyx-light"\n')
+        root = Path(self.temp.name)
+        calls = root / 'umbra-calls'
+        fake = root / 'umbra-icons'
+        fake.write_text(f'#!/bin/sh\necho "$@" >> {calls}\n')
+        fake.chmod(0o755)
+        with patch.object(icons, 'umbra_command', lambda: str(fake)):
+            self.run_command('sync')
+        palette = json.loads((self.state / 'umbra-palette.json').read_text())
+        self.assertTrue(palette['light'])
+        self.assertEqual(set(palette['swatches']), set(icons.theme_tools.SWATCH_NAMES))
+        self.assertIn(f'refresh --palette {self.state / "umbra-palette.json"} --quiet', calls.read_text())
+
+    def test_umbra_left_alone_when_not_in_use(self):
+        with patch.object(icons, 'umbra_command', lambda: None):
+            self.run_command('sync')
+        self.assertFalse((self.state / 'umbra-palette.json').exists())
+
     def test_picked_swatch_wins(self):
         self.suite('mode = "theme"\ntheme = "nyx-dark"\n[app_accents]\nfiles = "violet"\n')
         renderer = self.install_nyx_icons('Files')
