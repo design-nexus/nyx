@@ -158,6 +158,7 @@ nyx-dock  nyx-control-   nyx-notification-  nyx-desktop-
   keeps receiving and storing.
 
 ### 4.5 Control Center (`nyx-control-center`)
+Plugin tiles (2026-11-03): planned in `nyx-control-center/docs/PLUGIN_PLAN.md`.
 - Right-edge, full-height layer surface (as in the approved mockup), resident and hidden
   between uses for instant open; keyboard-interactive on demand; Esc closes; a catcher
   surface behind it (on its own layer, with an explicit input region) closes it on a
@@ -175,6 +176,8 @@ nyx-dock  nyx-control-   nyx-notification-  nyx-desktop-
   and bar agree. Links to Nyx Settings pages for anything beyond a quick control.
 
 ### 4.6 Desktop Widgets
+Plan (2026-11-03): [DESKTOP_WIDGETS_PLAN.md](DESKTOP_WIDGETS_PLAN.md). Every widget is an
+out-of-process plugin, sandboxed when third-party.
 - `nyx-desktop-widgets`: one bottom-layer surface per monitor; layouts keyed by
   (monitor id, workspace id) plus global widgets; on workspace change the host swaps
   which cached widget trees are visible, never rebuilds them; views of inactive
