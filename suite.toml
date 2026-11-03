@@ -807,3 +807,23 @@ packages = ["nyx-notification-center", "nyx-notifyd"]
 default = true
 version = "0.1.0"
 supported_releases = []
+
+# Clipboard: history, snippets, actions and verification codes (Super + Ctrl + V).
+[[repositories]]
+id = "clipboard"
+name = "nyx-clipboard"
+url = "https://github.com/design-nexus/nyx-clipboard.git"
+revision = "186794463d50fb1df86ebc8e05d8b0ea8ddc9652"
+status = "published"
+artifacts = []
+
+[[applications]]
+id = "clipboard"
+repository = "clipboard"
+target_repository = "nyx-clipboard"
+source = "."
+manifest = "Cargo.toml"
+packages = ["nyx-clipboard", "nyx-clipboardd", "nyx-clipboard-settings"]
+default = true
+version = "0.1.0"
+supported_releases = []

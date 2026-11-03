@@ -5,7 +5,7 @@
 #   ./uninstall.sh all --purge        remove every app and its settings and data
 set -euo pipefail
 
-ALL=(settings contacts activity torrents pdf notepad music media-player theater chat fonts archive office photos glimpse store git passwords weather news capture pulse containers share dock control-center notification-center)
+ALL=(settings contacts activity torrents pdf notepad music media-player theater chat fonts archive office photos glimpse store git passwords weather news capture pulse containers share dock control-center notification-center clipboard)
 say() { printf '\033[1m==>\033[0m %s\n' "$*"; }
 die() { printf '\033[31m==>\033[0m %s\n' "$*" >&2; exit 1; }
 
@@ -39,6 +39,7 @@ for a in "${apps[@]}"; do
     dock) bins="nyx-dock" ids="" ;;
     control-center) bins="nyx-control-center" ids="" ;;
     notification-center) bins="nyx-notification-center nyx-notifyd" ids="" ;;
+    clipboard) bins="nyx-clipboard nyx-clipboardd nyx-clipboard-settings" ids="Clipboard" ;;
     *) bins="nyx-$a" ids="${a^}" ;;
   esac
   if [[ $a == glimpse ]]; then
@@ -88,6 +89,17 @@ for a in "${apps[@]}"; do
     rm -rf "$config/omarchy/plugins/design-nexus.notification-center"
     systemctl --user daemon-reload 2>/dev/null || true
     [[ $purge == true ]] && rm -f "$share/nyx/notifications.db" "$share/nyx/notifications.db-wal" "$share/nyx/notifications.db-shm"
+  fi
+  if [[ $a == clipboard ]]; then
+    # Give Super + Ctrl + V back to Omarchy before the program goes.
+    [[ -x $bin/nyx-clipboard ]] && "$bin/nyx-clipboard" --unintegrate || true
+    systemctl --user disable --now nyx-clipboard.service nyx-clipboardd.service 2>/dev/null || true
+    rm -f "$config/systemd/user/nyx-clipboard.service" "$config/systemd/user/nyx-clipboardd.service" \
+      "$share/dbus-1/services/io.github.design_nexus.nyx.Clipboard1.service"
+    rm -rf "$share/nyx-settings/extensions/clipboard" "$share/settings/extensions/clipboard"
+    systemctl --user daemon-reload 2>/dev/null || true
+    [[ $purge == true ]] && rm -rf "$share/nyx/clipboard.db" "$share/nyx/clipboard.db-wal" "$share/nyx/clipboard.db-shm" \
+      "$share/nyx-clipboard" "$config/nyx-clipboard" "${XDG_CACHE_HOME:-$HOME/.cache}/nyx-clipboard"
   fi
   if [[ $a == share ]]; then
     systemctl --user stop nyx-share.service 2>/dev/null || true

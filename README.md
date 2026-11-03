@@ -37,6 +37,7 @@ changes with it, fits a half-screen tile, and works from the keyboard.
 | [Home](https://github.com/design-nexus/nyx-home) | A desktop frontend for your Home Assistant, with desktop automations |
 | [Maps](https://github.com/design-nexus/nyx-maps) | A map app |
 | [Transfer](https://github.com/design-nexus/nyx-transfer) | File transfers between this computer and SFTP, FTP, FTPS and WebDAV servers |
+| [Clipboard](https://github.com/design-nexus/nyx-clipboard) | Clipboard history, snippets, actions and verification codes, on Super + Ctrl + V |
 | [Assistant](https://github.com/design-nexus/nyx-assistant) | A local voice assistant: push-to-talk, wake word, desktop commands (not part of `all`; builds with CUDA when it's there) |
 
 Settings also takes device [extensions](https://github.com/design-nexus/nyx-settings/tree/main/extensions) (ASUS, Logitech, Razer, Corsair, RGB
