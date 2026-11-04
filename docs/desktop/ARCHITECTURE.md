@@ -176,7 +176,8 @@ Plugin tiles (2026-11-03): planned in `nyx-control-center/docs/PLUGIN_PLAN.md`.
   and bar agree. Links to Nyx Settings pages for anything beyond a quick control.
 
 ### 4.6 Desktop Widgets
-Plan (2026-11-03): [DESKTOP_WIDGETS_PLAN.md](DESKTOP_WIDGETS_PLAN.md). Every widget is an
+Built (2026-11-03) in [nyxos-project/nyx-desktop-widgets](https://github.com/nyxos-project/nyx-desktop-widgets),
+for NyxOS; its plan is that repo's `docs/PLAN.md`. Every widget is an
 out-of-process plugin, sandboxed when third-party.
 - `nyx-desktop-widgets`: one bottom-layer surface per monitor; layouts keyed by
   (monitor id, workspace id) plus global widgets; on workspace change the host swaps
