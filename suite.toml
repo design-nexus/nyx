@@ -192,6 +192,14 @@ status = "published"
 artifacts = []
 
 [[repositories]]
+id = "browser"
+name = "nyx-browser"
+url = "https://github.com/design-nexus/nyx-browser.git"
+revision = "38898ef4fe6dc86cd75a687b41eb3eff72efe50c"
+status = "published"
+artifacts = []
+
+[[repositories]]
 id = "capture"
 name = "nyx-capture"
 url = "https://github.com/design-nexus/nyx-capture.git"
