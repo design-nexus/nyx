@@ -75,7 +75,7 @@ nyx-dock  nyx-control-   nyx-notification-  nyx-desktop-
   UPower, PipeWire, MPRIS, power-profiles)
 ```
 
-- **No central desktop daemon.** Hyprland's event socket is cheap to subscribe to more
+- **No central desktop daemon** (superseded on NyxOS by §16, Nyx Shell Core). Hyprland's event socket is cheap to subscribe to more
   than once; each process keeps its own model through the shared crate. The only new
   daemon is `nyx-notifyd`, because the notification name must outlive any UI.
 - **Separate processes, measured first**: if milestone 1 shows the GTK processes cost
@@ -482,3 +482,19 @@ one) and keeps one connected at a time, Tor included. Adding a service is in Nyx
 provider's page), sign in the tool's way, or import a `.conf`/`.ovpn` file. The sign-in
 service (nyx-accounts) isn't involved: VPN sign-ins are each tool's own. ExpressVPN's
 status and Proton's CLI (beta) follow their documented commands and are untested here.
+
+## 16. Decision: Nyx Shell Core (2026-11-07)
+
+**Supersedes "No central desktop daemon" in §3** for NyxOS (handoff 01, chosen by Ken).
+
+- A coordinator, `nyx-shell-core` (repository `nyx-shell`), holds the one Hyprland
+  model and serves it over a versioned Unix socket, with overlay policy, focus
+  restoration, action routing, component health, the `shell` settings domain and theme
+  events. Audit, architecture and protocol: `nyx-shell/docs/`.
+- What §3 got right still holds: the coordinator is small (it reuses `nyx-desktop`'s
+  headless watcher), it never hosts UI, and every component keeps working when it isn't
+  running. `nyx-notifyd` stays separate.
+- `Panel1` stays. Shell Core bridges it, so the Control Center, Notification Center and
+  Switcher are in its overlay policy without changes.
+- The existing processes keep their own watchers until Handoff 03 moves them to Shell
+  Core's state; measurements before and after go in `nyx-shell/docs/PERFORMANCE.md`.
