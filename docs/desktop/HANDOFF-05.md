@@ -190,3 +190,36 @@ manages AI Core on its own:
 | Hugging Face token | Chat's file, which AI Core already reads | Unchanged |
 
 Installed to `~/.local/bin/nyx-chat`.
+
+### Stage C: Glimpse backend (nyx-glimpse `873eaa7`, nyx-ai `9633690`)
+
+- Embeddings come from AI Core (`embed_inputs`, background priority while indexing,
+  interactive for queries, batches of 16). Glimpse names EmbeddingGemma 2 Q8_0 itself,
+  its own folder copy first. The `inference/` crate, `setup-runtime.sh`, the downloader
+  and the device logic are gone; nothing of Glimpse runs llama.cpp.
+- AI Core gained `configure_service`'s `add_model_dirs` (trusted programs), so Glimpse
+  offers `~/.local/share/nyx-glimpse/Models` the first time it needs the model and sets
+  its load settings (`pooling=mean`, 2048 batches, 140 to 280 image tokens). The 865 MB
+  of models already there are used as they are.
+- The index stores AI Core's identity for its vectors. An index from Glimpse's own
+  runtime (`glimpse-embeddinggemma2-q8-v1`) is taken over without a rebuild when AI Core
+  reports the documented equivalent. Any other change builds `glimpse.next.sqlite`
+  beside the live index (searches flag it even when no file changed); the live index
+  keeps answering word matches until the new one has every file and replaces it.
+- Without AI Core, apps, file names, utilities and word matches in contents keep
+  working; the status line says why meaning matches paused. The indexer waits instead
+  of marking files failed.
+- Shared actions: AI Core's registry is a Glimpse provider (actions without required
+  arguments; "ask" actions run on a second Enter). The indexer offers `glimpse.search`
+  (read-only, never asks) while `nyx-aid.service` runs; it doesn't start AI Core.
+- `nyx-glimpse-backend` serves search and activation without GTK over nyx-ui-link
+  (`$XDG_RUNTIME_DIR/nyx-glimpse/ui.sock`) for the Quickshell interface. The GTK panel
+  keeps its own threads over the same providers; moving it onto the backend module is
+  left for later, since it would touch 3,500 lines of working UI for no visible change.
+- Tests: fake AI Core sockets for embedding and identity, the legacy mapping, the staged
+  rebuild with word matches while it runs, the AI-free fallback, the served action, the
+  action provider, the backend's fast results. `tests/core.rs` was already broken in the
+  standalone repository (it includes a file from the old monorepo); not changed here.
+
+Installed; `nyx-glimpsed` restarted on the new build. Its first index pass or search
+that needs embeddings registers the folder with AI Core.
