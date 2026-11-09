@@ -241,3 +241,30 @@ that needs embeddings registers the folder with AI Core.
   (nyx-design `qml/Nyx/Ui`) and `BackendClient` (nyx-shell), the same ones the Control
   Center's QML uses. The QML panel lacks previews, the action panel, `pw` and `cb`; the
   GTK panel keeps them.
+
+### Stage E: Nyx Voice (new repository design-nexus/nyx-voice `4a3b211`)
+
+Ken approved the new public repository and chose to have the Assistant link the engine
+(2026-11-08).
+
+- `nyx-voice-engine`: the Assistant's speech code, moved, not rewritten: PipeWire
+  capture and playback, echo cancelling, ducking, Silero and energy voice activity, the
+  streaming recognizer client, Kokoro and Chatterbox. Its config types are the
+  Assistant's `[audio]`, `[vad]`, `[stt]`, `[tts]`, `[barge_in]` sections, so existing
+  files read the same. Each program names itself (`paths::set_app`); the Assistant keeps
+  its folders and PipeWire names, and models one program downloaded are found by the
+  other (nothing downloads twice).
+- `nyx-voice-asr`: the sherpa-onnx worker, depending only on the protocol crate so its
+  ONNX Runtime stays apart.
+- `nyx-voiced`: one take at a time (`busy` otherwise), dictation captured, transcribed and
+  typed with `wtype` (clipboard fallback, media paused with `playerctl` when present, 60 s
+  cap), listening for apps in dictation or assistant mode with partial words, speaking,
+  devices, state (`watch`, and VoxType's state file values). Listening and typing need a
+  trusted program (`nyx-peer`, the same rule as AI Core); raw audio never touches disk,
+  transcripts are never logged. Socket-started; engines unload after five idle minutes.
+- `nyx-voice` command, `docs/PROTOCOL.md`, `docs/ARCHITECTURE.md`, and the VoxType parity
+  table in `docs/VOXTYPE.md`.
+- Tests: protocol lines, config (reading the Assistant's file), the trust check and
+  request validation over a real socket, engine units. No audio in tests.
+
+Installed on the laptop without enabling its socket (Omarchy keeps VoxType for F9).
