@@ -268,3 +268,33 @@ Ken approved the new public repository and chose to have the Assistant link the 
   request validation over a real socket, engine units. No audio in tests.
 
 Installed on the laptop without enabling its socket (Omarchy keeps VoxType for F9).
+
+### Stage F: Assistant (nyx-assistant `5db2f27`)
+
+- Inference: `assistant-inference` is now an AI Core client with the old runner's
+  methods (generate, grammar, look, unload, battery, status), so the planner, prompts and
+  sessions are unchanged. Turns are interactive priority with thinking off; grammars go
+  as `grammar`; images as image parts (vision only with a model that has it). `[llm]
+  model` names a GGUF file (its folder is offered to AI Core, read-only) or `auto` for AI
+  Core's `assistant` default. On battery, replies are capped at 256 tokens; AI Core's
+  battery saver decides where models run. `keep()` pins the model for a conversation.
+  `llama-cpp-2`, its CUDA build and the in-process worker are gone.
+- Speech: `assistant-audio` and the agent's recognizer and Kokoro are re-exports of Nyx
+  Voice's engine; the Assistant names itself to it, so its folders, caches and PipeWire
+  names (`Assistant`, `assistant-echo-cancel`) are as before. VoxType is gone: the
+  provider, `stt-daemon`, `nyx-assistant-stt.service`, `voxtype-parakeet.toml`; the
+  installer disables and removes them on update. The recognizer test moved to nyx-voice.
+- Actions: the `nyx-apps` ability (1.5.0) calls running apps through AI Core's shared
+  registry (`nyx-ai act`, after the Assistant's own approval) and falls back to the
+  control interface directly only when AI Core isn't running or hasn't seen the app.
+  Its schemas, voice routes and starting apps that aren't running stay in the ability.
+  Grants, capabilities, the audit journal and the secrets broker are unchanged.
+- Not done: offering the Assistant's own tools through `serve_actions`, and a generic
+  tool for shared actions the ability doesn't list (each would need a capability class
+  in the Assistant's policy). Notes still reaches the model through the Assistant's model
+  API, which now uses AI Core; moving Notes to `nyx-ai-client` belongs to nyx-notes.
+- Checked: workspace build, unit tests (core, policy, inference, audio, agent). Installed
+  (backup in `~/.local/state/nyx-assistant/backups/20261108-225918`). The daemon wasn't
+  running; a test start showed echo cancelling, the recognizer ready in 3 s, Kokoro on
+  the CPU and Silero from the existing cache, and it was stopped again. No language
+  model turn was run.
