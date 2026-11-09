@@ -288,6 +288,15 @@ def run(action, quiet=False):
         elif status != 'current' and not quiet:
             print(f'{status}: {name}')
     changed = False
+    # `generate` opts third-party launchers in; from then on a sync also gives newly
+    # installed apps Nyx icons, until `restore` opts out.
+    opted_in = STATE / 'third-party'
+    if action == 'generate':
+        STATE.mkdir(parents=True, exist_ok=True)
+        opted_in.touch()
+    elif action == 'restore':
+        opted_in.unlink(missing_ok=True)
+    adopt = action == 'generate' or (action == 'sync' and opted_in.exists())
     if action == 'restore':
         for identity, record in list(records.items()):
             if restore_one(identity, record):
@@ -326,7 +335,7 @@ def run(action, quiet=False):
         eligible = set()
         for identity, source in discover(records).items():
             record = records.get(identity)
-            if action == 'sync' and not record:
+            if action == 'sync' and not record and not adopt:
                 continue
             try:
                 raw = source.read_text()
@@ -430,8 +439,10 @@ def units():
     service = ('[Unit]\nDescription=Recolour Nyx icons for the current theme\nStartLimitIntervalSec=0\n\n'
                f'[Service]\nType=oneshot\nExecStartPre=/usr/bin/sleep 1\nExecStart={command}\n')
     # Folders, not theme.toml itself: apps replace it by rename, which a file watch misses.
-    watch = ''.join(f'PathChanged={path}\n' for path in [CONFIG / 'nyx', CONFIG / 'nyx/themes', OUTPUT])
-    path = ('[Unit]\nDescription=Recolour Nyx icons when the Nyx theme changes or an app installs its icon\n\n'
+    # The launcher folders catch apps installed later, by packages as well as by hand.
+    folders = [CONFIG / 'nyx', CONFIG / 'nyx/themes', OUTPUT, *[root for root in roots() if root.is_dir()]]
+    watch = ''.join(f'PathChanged={path}\n' for path in dict.fromkeys(folders))
+    path = ('[Unit]\nDescription=Recolour Nyx icons when the Nyx theme changes or an app is installed\n\n'
             f'[Path]\n{watch}Unit=nyx-icons.service\n\n[Install]\nWantedBy=default.target\n')
     # The hook hands the work to the service so a theme switch doesn't wait for it.
     hook = (f'#!/bin/bash\n{HOOK_MARK}: recolour Nyx icons for the new Omarchy theme.\n'

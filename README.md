@@ -82,15 +82,16 @@ nyx icons follow on      # follow it again (the installer turns this on)
 Following the theme installs an Omarchy theme-set hook
 (`~/.config/omarchy/hooks/theme-set.d/40-nyx-icons`) and a systemd user path unit,
 `nyx-icons.path`. The unit runs `nyx icons sync` when `~/.config/nyx/theme.toml` or
-a theme in `~/.config/nyx/themes/` changes, and when an app installs its icon. There
+a theme in `~/.config/nyx/themes/` changes, when an app installs its icon, and when
+a launcher is added to an applications folder (yours, the system's or Flatpak's). There
 is no running daemon. A sync writes only icons that change, then refreshes the icon
 cache. Recognized third-party apps use curated glyphs in the theme's nearest swatch;
-other apps keep their original logo colors on the theme's tile, and only apps
-already opted in with `generate` are recoloured.
+other apps keep their original logo colors on the theme's tile. Third-party
+launchers are opt-in: after `generate`, a sync also gives newly installed apps Nyx
+icons, until `restore` turns that off again.
 The commands use local assets and require the system Python, python-gobject and
 GTK 3. Launcher overrides and restoration records stay under the user's data
-directory. Edited launchers are reported as conflicts and left intact. Run
-`generate` again after installing apps to give their launchers Nyx icons.
+directory. Edited launchers are reported as conflicts and left intact.
 Application-internal branding is unchanged; running apps and launchers may retain
 cached icons until reopened. To refresh the bundled design resources during development,
 run `python3 tools/package-icons.py /path/to/nyx-design`.

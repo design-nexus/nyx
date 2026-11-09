@@ -207,6 +207,18 @@ class IconCommands(unittest.TestCase):
         self.assertNotEqual(dark, asset.read_text())
         self.assertEqual(set(self.records()), {'firefox.desktop', 'custom.desktop'})
 
+    def test_sync_adopts_apps_installed_after_generate(self):
+        self.suite('mode = "theme"\ntheme = "nyx-dark"\n')
+        self.run_command('generate')
+        (self.system / 'code.desktop').write_text(self.firefox.replace('Firefox', 'Code'))
+        self.assertIn('generated (curated): Code', self.run_command('sync')[1])
+        self.assertIn('code.desktop', self.records())
+        self.assertEqual(self.run_command('restore')[0], 0)
+        (self.system / 'zed.desktop').write_text(self.firefox.replace('Firefox', 'Zed'))
+        self.run_command('sync')
+        self.assertEqual(self.records(), {})
+        self.assertFalse((self.user / 'zed.desktop').exists())
+
     def test_sync_follows_a_change_made_during_it(self):
         self.suite('mode = "theme"\ntheme = "nyx-dark"\n')
         renderer = self.install_nyx_icons('Files')
@@ -234,6 +246,8 @@ class IconCommands(unittest.TestCase):
         path_unit = (icons.UNITS / 'nyx-icons.path').read_text()
         self.assertIn(f'PathChanged={self.config}/nyx\n', path_unit)
         self.assertIn(f'PathChanged={self.output}', path_unit)
+        self.assertIn(f'PathChanged={self.user}\n', path_unit)
+        self.assertIn(f'PathChanged={self.system}\n', path_unit)
         service = (icons.UNITS / 'nyx-icons.service').read_text()
         self.assertIn('icons sync --quiet', service)
         self.assertIn('StartLimitIntervalSec=0', service)
