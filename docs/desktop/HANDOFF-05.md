@@ -223,3 +223,21 @@ Installed to `~/.local/bin/nyx-chat`.
 
 Installed; `nyx-glimpsed` restarted on the new build. Its first index pass or search
 that needs embeddings registers the folder with AI Core.
+
+### Stage D: Glimpse presentation (nyx-glimpse `54d122f`)
+
+- `quickshell/Glimpse/Main.qml`: a component for `nyx-shell-qs` on `Nyx.Shell`
+  (`OverlaySurface`: transient, keyboard exclusive, active screen, focus restored,
+  group `launcher`, shown over fullscreen windows) and `Nyx.Ui` (search field, list
+  rows, badges, theme, reduced motion). It draws what `nyx-glimpse-backend` publishes and
+  drops replies for any query but the current one.
+- `nyx-glimpse --toggle`/`--hide` go to the backend while a Quickshell interface is
+  connected, else to the GTK panel, so Shell Core's `shell.glimpse.toggle` route and the
+  Super+Space bind keep working unchanged. The laptop has no backend: GTK as before.
+- `data/nyx-glimpse-backend.service` for NyxOS.
+- Checked on a headless output (standalone `Nyx.Shell`, keyboard off, scratch folders):
+  file results with the selected row, a calculation answer.
+- Depends on two pieces still uncommitted in other sessions' trees: `Nyx.Ui`
+  (nyx-design `qml/Nyx/Ui`) and `BackendClient` (nyx-shell), the same ones the Control
+  Center's QML uses. The QML panel lacks previews, the action panel, `pw` and `cb`; the
+  GTK panel keeps them.
