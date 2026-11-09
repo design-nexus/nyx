@@ -298,3 +298,21 @@ Installed on the laptop without enabling its socket (Omarchy keeps VoxType for F
   running; a test start showed echo cancelling, the recognizer ready in 3 s, Kokoro on
   the CPU and Silero from the existing cache, and it was stopped again. No language
   model turn was run.
+
+### Stage G: Aura (nyx-assistant `12aefba`)
+
+- Real states added to the daemon: `activating` while a turn waits for AI Core to
+  queue or load the model (from AI Core's `queued`/`model_loading` events), and
+  `unavailable` when a turn fails because AI Core can't be reached (instead of `error`).
+  `transcribing` and `executing` already existed. Approvals show as attention.
+- `quickshell/Aura/Main.qml`: Full Aura (soft light up both sides, wider with the voice)
+  and Edge Flow (a segment with a soft glow travelling round the edge, slower while
+  thinking); persistent (faint at idle) or activity (only while busy, fading out after);
+  reduced motion (`[ui] aura_reduce_motion` or the theme's); `Nyx.Theme` colours; a Shell
+  Core `presentation` overlay per screen in `[ui] aura_monitor_mode`, no input, inside
+  the bars' reserved space, hidden while locked or over fullscreen windows. It reads
+  `nyx-assistant listen`, so nothing in it can hold up listening, speech or the model.
+- `[ui] aura_renderer`: `gtk` (default; `nyx-assistant-visual` as before) or `quickshell`.
+  Canvas stays in `nyx-assistant-visual`.
+- Checked on a headless output: Full Aura while listening, Edge Flow while speaking and
+  thinking. Installed (the daemon and the GTK Aura were off and stay off).
