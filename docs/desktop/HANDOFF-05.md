@@ -333,9 +333,12 @@ Installed on the laptop without enabling its socket (Omarchy keeps VoxType for F
   `nyx-voice` package and `nyx.voice` (on with the Assistant; socket-started); Glimpse
   without llama.cpp, with its backend and Quickshell component (backend started with
   the session under `nyx.shell`); the Assistant without VoxType, the recognizer worker
-  and llama.cpp, with its Aura as a shell component. Still to do in the NyxOS VM, as
-  the laptop has no Nix: `nix flake update nyx-chat nyx-glimpse nyx-assistant nyx-ai
-  nyx-voice`, `scripts/git-hashes > lib/git-hashes.json`, `nix flake check --no-build`.
+  and llama.cpp, with its Aura as a shell component. Inputs moved to nyx-chat `e4c2086`,
+  nyx-glimpse `916bbfe`, nyx-assistant `12aefba`, nyx-ai `8adb415` and nyx-voice
+  `1ebd749`, git hashes regenerated, in a separate folder of the dev VM (`364e0e3`).
+  `nix flake check --no-build` passes, the Nix files are formatted, and the whole
+  incus-dev system evaluates with both branches; its Hyprland config is valid Lua with
+  the dictation keys. Nothing was built or switched (Ken's choice, 2026-11-08).
 - nyxos, branch `handoff-05` (`5bd37f5`): Nyx Voice on by default, F9 and Right Alt held
   and Super+Ctrl+X for dictation. It needs the nyx-packages branch first.
 
@@ -356,3 +359,18 @@ build can't read:
 
 On NyxOS, the previous generation (`nixos-rebuild --rollback`, or the boot menu) undoes
 the packaging; user data is the same as on the laptop.
+
+#### Left to do
+
+- Merge nyx-packages `handoff-05`, then nyxos `handoff-05` (its `flake.lock` moved to that
+  nyx-packages revision), build, rebuild the VM and check Glimpse's QML panel, Nyx Voice
+  dictation and the Assistant there.
+- `Nyx.Ui` (nyx-design) and `BackendClient` (nyx-shell) are another session's uncommitted
+  work; Glimpse's QML panel and the Control Center's need them committed and packaged.
+- Benchmarks after the migration (Glimpse's semantic query and indexing through AI Core;
+  the Assistant's spoken turn end to end) weren't run: they need real inference on the
+  GPU (Ken, 2026-11-08). Baselines are in section 4.
+- The Assistant offering its own tools through `serve_actions`, and a generic tool for
+  shared actions the `nyx-apps` ability doesn't list.
+- Notes calling AI Core directly (nyx-notes) instead of the Assistant's model API.
+- Glimpse's GTK panel on the backend module (it runs the same providers itself today).
