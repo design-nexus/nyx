@@ -153,3 +153,40 @@ Recorded before the migration; nothing new was measured for this audit.
 ## 6. Progress
 
 Each stage updates this section with what landed and the commits.
+
+### Stage B: Chat (nyx-chat `e4c2086`)
+
+Chat runs every local llama.cpp model in Nyx AI Core (nyx-ai `da5b6f6`) and no longer
+manages AI Core on its own:
+
+- Model settings: read from AI Core when Chat starts and when a model's settings open;
+  only the keys the person edits are sent, as changes from what a load uses now. Chat
+  no longer pushes its defaults to `*` or re-sends every model's settings each launch.
+- Service settings (models kept loaded, idle unload) are shown as AI Core has them and
+  written straight to it; Chat's own copies are gone. Chat never unloads a model to
+  make room: picking another model only drops Chat's pin (AI Core keeps the model while
+  another app needs it, and decides what to evict).
+- Any loopback address (`localhost`, `127.0.0.0/8`, `::1`, any port) for a llama.cpp host
+  is AI Core, so nothing on this computer bypasses it. Ollama stays a separate provider.
+- No silent swaps: a chosen model that isn't installed stays chosen, with the banner
+  that offers the download; a knowledge base's or long attachment's embedding model and
+  Quick ask's model say which model stands in for the missing one.
+- Errors name what happened (version mismatch, unknown model, load failure, runner
+  restarting, busy or out of memory, permission, unsupported capability, timeout).
+  Stop sends AI Core's `cancel`, then closes the stream.
+- Marketplace fit uses the GPU memory AI Core reports; `nvidia-smi` isn't asked.
+
+| Must keep working | Status | How it was checked |
+| --- | --- | --- |
+| History, folders, branches | Unchanged code and storage | Build; store tests |
+| Personas (system prompts per chat, folder, global; `/` prompts) | Unchanged | Build |
+| Attachments, vision images | Unchanged; images go as `image_url` parts | `tool_results_answer_their_calls` |
+| Streaming, tool calls, thinking, stats | Unchanged path, now testable against a socket | `streams_stops_and_reports_through_ai_core` |
+| Cancel | Explicit `cancel`, then close | Same test (the fake sees the cancel) |
+| Model choice and AI Core's default | Default role still used when Chat has no pick | Build |
+| Model settings | Read from AI Core; edits only | `edits_send_only_what_changed` |
+| Integrations: MCP, web search, voice, Control (Assistant) | Unchanged | Build |
+| Ollama and remote llama.cpp | Unchanged; remote only for llama.cpp | `every_local_address_is_ai_core` |
+| Hugging Face token | Chat's file, which AI Core already reads | Unchanged |
+
+Installed to `~/.local/bin/nyx-chat`.
