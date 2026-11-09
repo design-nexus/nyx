@@ -316,3 +316,43 @@ Installed on the laptop without enabling its socket (Omarchy keeps VoxType for F
   Canvas stays in `nyx-assistant-visual`.
 - Checked on a headless output: Full Aura while listening, Edge Flow while speaking and
   thinking. Installed (the daemon and the GTK Aura were off and stay off).
+
+### Stages H and I: validation, NyxOS and rollback
+
+- Cross-app test (nyx-ai `8adb415`, against the stand-in worker): Chat and the
+  Assistant chatting at once on one model while Glimpse indexes in the background on
+  another; both replies finish whole, indexing runs after them (one model loaded at a
+  time), and one app's connection can't cancel another's request. AI Core's existing
+  tests cover worker crashes and recovery, eviction, cancel and settings.
+- Nyx Settings (`efa3eee`): the Assistant's hearing is Nyx Voice's recognizer (no
+  VoxType choice); on NyxOS, Dictation is Nyx Voice's (output, pausing media, longest
+  take); on Omarchy the VoxType section finds Omarchy 4.5's renamed install script.
+  Installed.
+- nyx-packages, branch `handoff-05` (`9620621`, worktree `~/Projects/nyx-packages-h05`,
+  so the uncommitted lock update in `~/Projects/nyx-packages` is left alone): the
+  `nyx-voice` package and `nyx.voice` (on with the Assistant; socket-started); Glimpse
+  without llama.cpp, with its backend and Quickshell component (backend started with
+  the session under `nyx.shell`); the Assistant without VoxType, the recognizer worker
+  and llama.cpp, with its Aura as a shell component. Still to do in the NyxOS VM, as
+  the laptop has no Nix: `nix flake update nyx-chat nyx-glimpse nyx-assistant nyx-ai
+  nyx-voice`, `scripts/git-hashes > lib/git-hashes.json`, `nix flake check --no-build`.
+- nyxos, branch `handoff-05` (`5bd37f5`): Nyx Voice on by default, F9 and Right Alt held
+  and Super+Ctrl+X for dictation. It needs the nyx-packages branch first.
+
+#### Rollback
+
+On the laptop, every app reinstalls from an earlier commit with its own `install.sh`
+(`git checkout <commit> && ./install.sh …`), and nothing migrated data in a way an older
+build can't read:
+
+| App | Back to before Handoff 05 | Notes |
+| --- | --- | --- |
+| Chat | nyx-chat `13d73f7` | AI Core's settings were never rewritten by the new build; Chat's old copies are in `settings.toml` until it saves again |
+| Glimpse | nyx-glimpse `55ff757` | The old runtime is still in `~/.local/share/nyx-glimpse/runtime`; an index AI Core rebuilt has AI Core's identity and the old build wipes and re-indexes it (`glimpse.next.sqlite` can be deleted) |
+| AI Core | nyx-ai `da5b6f6` | Glimpse's folder in `model_dirs` stays listed; remove it from `~/.config/nyx-ai/settings.toml` to forget it |
+| Assistant | nyx-assistant `48100ac`, or restore `~/.local/state/nyx-assistant/backups/20261108-225918` | The old build needs `nyx-assistant-stt.service` and `voxtype-parakeet.toml` back (both in that backup) |
+| Nyx Voice | `systemctl --user disable --now nyx-voiced.socket`; remove `~/.local/bin/nyx-voice*` | Models it found are the Assistant's own and stay |
+| Settings | nyx-settings `4073954` | |
+
+On NyxOS, the previous generation (`nixos-rebuild --rollback`, or the boot menu) undoes
+the packaging; user data is the same as on the laptop.
