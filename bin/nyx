@@ -7,6 +7,7 @@
 #   nyx update                 rebuild every installed app from the latest source
 #   nyx uninstall APP… [--purge]
 #   nyx share FILE…            share through the Share Sheet (nyx share --help)
+#   nyx display virtual …      split a wide screen into virtual monitors (nyx display --help)
 set -euo pipefail
 
 REPO="design-nexus/nyx"
@@ -71,5 +72,10 @@ case ${1:-} in
     shift
     [[ -x $bin/nyx-share ]] || { echo "Share isn't installed. Install it with: nyx install share" >&2; exit 1; }
     exec "$bin/nyx-share" "$@" ;;
-  *) sed -n '2,9p' "$0" | sed 's/^# \{0,1\}//'; exit 1 ;;
+  display)
+    shift
+    display=$(command -v nyx-display || echo "$bin/nyx-display")
+    [[ -x $display ]] || { echo "nyx display comes with Settings. Install it with: nyx install settings" >&2; exit 1; }
+    exec "$display" "$@" ;;
+  *) sed -n '2,10p' "$0" | sed 's/^# \{0,1\}//'; exit 1 ;;
 esac
