@@ -359,3 +359,30 @@ nyxos (`nyx` routing) → nyx-packages (packages, manifests, service files) on a
   - A pin edge or margin setting in `shell.toml`.
   - Fullscreen hiding seen live (unit-tested only, since making a window fullscreen in a test moves focus).
   - Orca on a session with the accessibility bus (it isn't running on the laptop).
+
+### Follow-ups after Phase 7
+
+- **Calendar and Reminders without their window** (nyx-calendar `dbbef8a`, nyx-reminders `9c40d9f`): activation `dbus`. The calendar list, reminder lists and reminders are kept whether or not a window shows, and calls wait for the first load. Reminders started this way sends no alerts. A reminder's source is written to the sidecar directly. Checked on a private bus with scratch Evolution Data Server data: a cold `calendar add`, `calendar next`, `reminders add`, and `list` after a fresh start.
+- **Commands** (nyx-core `b2b7509`, Glimpse `b37b803`, Weather `cd0645b`):
+  - Local paths complete `format: path` arguments.
+  - Running apps' `x-nyx.suggest` actions complete theirs (`weather use Ca` → Calera; Music's outputs), within 300 ms; a key press never starts an app.
+  - When no command matches, the CLI says how to ask Nyx Assistant (`nyx-assistant say '…'`), and Glimpse offers an "Ask Nyx Assistant" row that sends the words only when picked.
+- **Music outputs** (nyx-music `fe7eb58`): `music.outputs` and `music.output`, through GStreamer's PipeWire devices. The choice is kept, applied to both engines, and switched mid-song where it was. Checked with a silent file, muted.
+- **Files** (nyx-files `ad8cfb91`): the `changes` topic. The panel lists the shown folder again when it changes. Trash through the panel was checked end to end with a scratch home: it asks first, and the real Trash was untouched.
+- **Pinned panels** (nyx-shell `d2bfcf1`, Glimpse `4de3881`):
+  - Drag a pin by its header and it stays there; double-click puts it back in the stack.
+  - `[pins]` in `shell.toml` sets edge, margin and gap; standalone reads it too.
+  - Glimpse keeps the position with the pin.
+- **More apps:**
+  - **Containers** (`b67d5c8`, Glimpse `bcc5473`): list, start, stop, restart, open, the `workloads` topic and its panel.
+  - **Clipboard** (`5beb9ca`): status, private mode on, clear (only the `nyx` command and Glimpse's backend, a new Command scope, and confirmed), open. Nothing from the history.
+  - **Passwords** (`c382c93`): status, lock, open. Never a secret; the daemon keeps its private socket.
+  - **Backup** keeps its grant-based Control as it is.
+  - **Devices** (nyx-connect) isn't checked out here.
+  - nyx-actions `53895a9` adds `x-nyx.sensitive` for private reads; nothing uses it yet.
+- **NyxOS packaging** (nyx-packages branch `glimpse-2`, `0c571aa`, unbuilt):
+  - action manifests and D-Bus services from `--describe-actions` (`lib.installActions`);
+  - the `nyx-actions` package;
+  - `share/nyx` linked for every app;
+  - Glimpse's Quickshell panel as a Nyx Shell component, with its backend started with the session.
+  - After pushing: update the inputs, run `scripts/git-hashes`, build.
