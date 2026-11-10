@@ -33,7 +33,7 @@ id = "core"
 name = "nyx-core"
 dependency_revision = "ce9cdf835790b2347a3bc5d65ef2d45f634132d5"
 # The nyx-actions command behind `nyx APP …`, built by the installer with the CLI.
-actions_revision = "b2b7509c96c0220b1d799c420172f28b34655664"
+actions_revision = "ebd58693232f388246189aebc0eecc2e51f554fa"
 url = "https://github.com/design-nexus/nyx-core.git"
 revision = "ce9cdf835790b2347a3bc5d65ef2d45f634132d5"
 status = "published"
