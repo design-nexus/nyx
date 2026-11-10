@@ -297,7 +297,39 @@ Not checked yet: clicking the control or a menu row (no click injection in eithe
 and the menu with the plugin in one session (needs NyxOS on Hyprland 0.57.2, with Shell
 Core and nyx-shell-qs).
 
-## 10. Constraints and open points
+## 10. Stage 6 results (2026-11-10)
+
+nyx-settings `cb27014`, nyx-shell `c631045`.
+
+Tiling & Workspaces gets the window controls, shown by what the system has:
+
+- **Everywhere** (group "Nyx apps' window controls" on Omarchy, "Window controls" on
+  NyxOS): adaptive controls on or off, and how long the pointer rests on a Nyx app's
+  Close button (0 to 1000 ms; written once the slider rests). They're
+  `[window_controls]` in `shell.toml`: through Shell Core where it runs, else the user's
+  layer (Nyx apps read it there on Omarchy too).
+- **Where nyx-decor is loaded** (`hyprctl -j plugin list`, asked once per run): headerbar
+  height (24 to 48 px), double-click to maximize, float windows where they were, the
+  control on floating terminals and its corner. These are Hyprland values
+  (`plugin.nyx_decor.*`), live through `hl.config` and kept in Settings' managed file in
+  a block that applies only while the plugin is loaded, so they never become config
+  errors without it.
+- **Window controls per app** (with nyx-decor): each app's presentation (Automatic, Nyx
+  headerbar, small control while floating, its own controls) and how it opens
+  (Automatic, floating, tiled); add an installed app (keyed by its `StartupWMClass`,
+  else its desktop id), or remove one. The list is saved whole and then
+  `nyx-shellctl window-controls --apply` brings Hyprland's rules up to date.
+- With nyx-decor loaded, Omarchy's titlebar choice and its "Apps with their own
+  titlebar" list are left out; they stay on Omarchy.
+- App ids now match without regard to case, in Shell Core and in the rules, since the
+  app index lowercases window classes and classes vary (`Alacritty`).
+
+Checked: Settings tests (215, including the managed file's plugin block), a test copy
+on a headless output showing the Omarchy variant, and the NyxOS variant with a test-only
+switch (removed again) and sample per-app rules. Installed on the laptop; the managed
+Hyprland file came out unchanged.
+
+## 11. Constraints and open points
 
 - **Native window identity:** nyx-ui finds its own Hyprland window by pid and title.
   GTK4 can't learn its window's address or `stableId`. Stage 3 keeps pid plus title,
