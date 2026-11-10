@@ -278,9 +278,26 @@ first two findings above). In NyxOS since 2026-11-10 (pushed):
   GTK one isn't started) and no OSD.
 - nyxos `7801b5f`: the patch above.
 
-The incus-dev system builds with both (in a scratch copy in the VM: nyx-decor, both
-Shell Core units with the session, the plugin and rules in hyprland.lua). Not yet
-switched or run in a session.
+The VM runs both since 2026-11-10 (plugin loaded live, Shell Core and nyx-shell-qs
+with the session). The first session run found, fixed and tested in the VM (local
+commits):
+
+- nyx-packages `26b12c9`: `share/nyx-shell/components` wasn't linked into the system
+  profile, so nyx-shell-qs found no components: no OSD, window menu or Control Center
+  panel on NyxOS.
+- nyxos `013c328`: nyx-shell-qs had no icon theme (Quickshell reads no GTK setting):
+  `QS_ICON_THEME=Umbra`.
+- nyx-shell `b444f27`: the window menu's popups asked for a grab, which needs an input
+  event on the new overlay; Qt refused and nothing showed. They no longer grab; the
+  overlay (exclusive keyboard) drives them.
+- nyx-hyprland `0cfd3f1`: the plan's xdg-decoration default was missing (an untagged
+  app got nothing, so NyxOS showed no headerbar). Untagged Wayland windows with an
+  xdg-decoration object (Hyprland always answers server-side) get the headerbar;
+  `plugin:nyx_decor:server_side_headerbar` turns it off.
+
+Checked in the session: the window menu at the point the plugin sends, with the tiled
+window's actions and icons; Close through Shell Core. In a nested Hyprland: untagged
+foot gets a headerbar, chromeless and preserve-native foot and a GTK app don't.
 
 ## 9. Stage 5 results (2026-11-10)
 
