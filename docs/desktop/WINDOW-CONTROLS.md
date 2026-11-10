@@ -203,7 +203,70 @@ Limits found:
 - The hover delay is read once per app start.
 - Move to workspace lists 1 to 10, not a virtual monitor region's own numbers.
 
-## 8. Constraints and open points
+## 8. Stage 4 results (2026-11-10)
+
+nyx-hyprland `00a1f4c` (`plugins/nyx-decor`), nyx-packages `1fae17e` (`nyx-decor`),
+nyx-system `1c78f1c` (theme colours), nyx-shell `e82feaa` (`window-controls` without
+Shell Core, unchanged files left alone).
+
+- **Headerbar:** an `IHyprWindowDecoration` on the top edge, priority 10010, so it
+  sits inside the window's border and the border goes round bar and window as one. Title
+  at the left; maximize (restore once maximized; expand on a tiled window), float or
+  tile, and close at the right, drawn with cairo. Hover lights a button, close turns the
+  danger colour. Empty space drags a floating window, a double-click maximizes, a
+  right-click posts `nyxdecor>>menu,ADDRESS,X,Y` (for Stage 5's menu). Not on dialogs,
+  transient, modal or override-redirect windows; hidden in true fullscreen (the window
+  then takes the whole output); kept when maximized. Inactive windows dim the title.
+- **Actions** run the same dispatchers as Shell Core, deferred to Hyprland's idle loop.
+- **Floating geometry:** each floating window's place is read every frame once it has
+  floated for 500 ms; floating it again after tiling puts it back there, clamped to its
+  monitor's work area (moved in, or centred, if that monitor went away).
+- **Settings** `plugin.nyx_decor`: `enabled`, `height` (32, 24 to 48), `font_size` (12),
+  `font_family`, `double_click_maximize`, `restore_float_geometry`, and `col.*`.
+  nyx-themed sets the colours from the theme (panel, text, tertiary text, hover
+  strength, danger) once the plugin is loaded; Hyprland reads its config again when
+  plugins load, so this holds from the first start.
+- **Checked** in a nested Hyprland 0.57.2 inside the NyxOS VM's session, with `foot`
+  tagged for a headerbar: tiled and floating bars, the border round both, float/tile and
+  maximize/restore glyphs, Close's hover colour, live colour changes, fullscreen without
+  a bar, float at (90, 80), tile, float again at (90, 80), two windows (inactive
+  styling), closing a window and unloading the plugin with Hyprland still running.
+
+Not checked yet: pointer clicks on the bar (dragging, double-click, right-click,
+pressing buttons). The nested session had no way to inject clicks; they need a person at
+the VM's console or Stage 7's run on NyxOS itself.
+
+Limits: no app icon in the bar yet; no minimize on NyxOS; a window's headerbar changes
+only when the rules do (a config reload), as rule tags are static.
+
+### Found on the way (for the Hyprland 0.57.2 packaging, d54327d)
+
+- The patch series' `hyprtester/` hunks don't apply: Hyprland's flake source leaves
+  `hyprtester` out, and `patch` stops at "File to patch".
+- Hyprland 0.57.2 needs wayland-protocols 1.49; with `inputs.nixpkgs.follows` it gets
+  nixpkgs' 1.48.
+- `patchSeries = "${inputs.nyx-hyprland}/patches/0.57.2"` makes Hyprland depend on the
+  whole nyx-hyprland source, so any change there (the plugin included) rebuilds
+  Hyprland. `builtins.path { path = …/patches/0.57.2; name = …; }` would make it depend
+  on the series alone.
+
+The VM test worked around the first two in a scratch copy only (`/root/nyxdecor`).
+
+### VM note
+
+A nested Hyprland started as ken inside the VM's session shares ken's systemd user
+manager; stopping the first one ended ken's desktop session in the VM. The test then ran
+nested Hyprland with its own `XDG_RUNTIME_DIR` and a bare environment, stopped with
+SIGKILL, and the session stayed up. Any later nested test must do the same.
+
+### Turning it on in NyxOS
+
+`patches/nyxos-window-controls.patch` (next to this file) loads the plugin, the
+window-controls rules file and runs `nyx-shellctl window-controls --apply` at Hyprland's
+start. It goes into nyxos once nyx-packages `1fae17e` is pushed and pinned there, and
+NyxOS's Hyprland is 0.57.2 (the plugin needs it).
+
+## 9. Constraints and open points
 
 - **Native window identity:** nyx-ui finds its own Hyprland window by pid and title.
   GTK4 can't learn its window's address or `stableId`. Stage 3 keeps pid plus title,
