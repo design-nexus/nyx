@@ -329,7 +329,53 @@ on a headless output showing the Omarchy variant, and the NyxOS variant with a t
 switch (removed again) and sample per-app rules. Installed on the laptop; the managed
 Hyprland file came out unchanged.
 
-## 11. Constraints and open points
+## 11. Stage 7: validation so far (2026-11-10)
+
+The handoff's tests. "Nested VM" is a nested Hyprland 0.57.2 with nyx-decor in the
+NyxOS VM's session; "headless" a test copy on the laptop's own headless output. NyxOS
+itself can't run the whole stack yet (section 8: Hyprland 0.57.2 doesn't build in
+nyx-packages, and the NyxOS change waits for the pin).
+
+| Test | Result | Where |
+| --- | --- | --- |
+| Native Nyx app tiled: one Close button, hover controls | Close button shown; popover content right; its placement in a tiled window not visible in headless captures | headless (Weather) |
+| Native Nyx app floating: same header, floating controls | Passed: popover under Close, right-aligned, floating rows | headless |
+| Native app toolbar actions never obstructed | Passed: the popover opens below the header | headless |
+| Third-party app with controls: no duplicated headerbar | Passed by design: only tagged windows get one; untagged foot has none | nested VM |
+| Third-party app without controls: integrated headerbar | Passed: inside the border, flush with the content, themed | nested VM |
+| Chromeless terminal tiled: no control | Passed | nested VM |
+| Chromeless terminal floating: compact control | Passed (corner setting live) | nested VM |
+| Float, tile, float: previous geometry | Passed: (90, 80) 700×420 back | nested VM |
+| Tiled expand, restore: original arrangement | Passed: tiled slot back | nested VM |
+| Maximize, restore: floating geometry | Passed | nested VM |
+| True fullscreen: decorations hidden | Passed: no bar, no reserved space, no control | nested VM |
+| Leave fullscreen: presentation back | Passed | nested VM |
+| Change the theme: controls follow | Plugin colours change live through `hl.config` (what nyx-themed writes); nyx-ui's popover uses the theme's CSS. Not run end to end with nyx-themed | nested VM |
+| Move to another monitor | Passed: moved with its control | nested VM |
+| Disconnect a monitor: window recoverable | Passed: on the remaining screen (its workspace moved there); floating again centred it at its size | nested VM |
+| Close a window during the popover | Passed: Weather exited cleanly with the popover open | headless |
+| Restart shell UI: state valid | Plugin unloaded and loaded again with windows open: bars and controls back. Shell Core's restart was already covered (Handoff 01) | nested VM |
+| Rapid mode switching: no duplicate or orphaned decorations | Passed: 60 float toggles and 8 fullscreen toggles across two windows, then one bar and one control; native: 20 toggles with the popover open | nested VM, headless |
+| Dialogs, transients, popups, utility windows | Not tested: no dialog-capable app in the VM's test session. The plugin skips windows with a parent, transient, modal or override-redirect | — |
+
+Still to do on NyxOS once it runs Hyprland 0.57.2 with nyx-decor (section 8): clicks on
+the headerbar and control (drag, double-click, right-click, buttons), the window menu
+opened by them with Shell Core and nyx-shell-qs in the same session, dialogs from real
+apps (GTK, Qt, Electron, XWayland), the theme changed through Settings, and Settings'
+NyxOS page against the live plugin.
+
+### Deviations from the handoff
+
+- Floating geometry memory lives in the compositor plugin, not in Shell Core: it has to
+  act before Hyprland's own placement shows, and it then covers every way a window
+  changes mode.
+- Minimize is offered only where something brings a window back (Omarchy's floating
+  workspaces); NyxOS has no hide mechanism, so it isn't offered there.
+- The headerbar has no app icon yet.
+- Native apps find their own window by process and title (GTK can't learn its Hyprland
+  address); the hover delay is read once per app start.
+
+## 12. Constraints and open points
 
 - **Native window identity:** nyx-ui finds its own Hyprland window by pid and title.
   GTK4 can't learn its window's address or `stableId`. Stage 3 keeps pid plus title,
