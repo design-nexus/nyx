@@ -98,8 +98,10 @@ nyx-dock  nyx-control-   nyx-notification-  nyx-desktop-
   history for "most recently used").
 - **User workspaces = ids 1..=10.** Special workspaces, named workspaces (negative ids,
   including Settings' `settings-loop-start`), and id 11 (the loop placeholder) are never
-  user workspaces. A future agent-only workspace uses a reserved `special:` or name
-  prefix and is invisible to dock counts, widgets and wallpapers.
+  user workspaces. The `nyx-agent` name prefix stays reserved and invisible to dock
+  counts, widgets and wallpapers, but agent workspaces don't use it: each is a
+  headless sway run by `nyx-agentd`, never a Hyprland workspace
+  (`nyx-agents/docs/WORKSPACES.md`).
 - Omarchy workspace mode: read `workspace-layouts/<id>.lua` and default; watch that
   folder with inotify (the Omarchy dock is told over shell IPC; we can't be).
 - Panel coordination helper, workspace profiles (`~/.config/nyx/desktop/profiles/<id>.toml`,
