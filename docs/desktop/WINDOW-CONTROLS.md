@@ -266,20 +266,21 @@ window-controls rules file and runs `nyx-shellctl window-controls --apply` at Hy
 start.
 
 Hyprland 0.57.2 builds in nyx-packages since `3772a48` (another session's fix for the
-first two findings above). Ready locally, not pushed (2026-11-10):
+first two findings above). In NyxOS since 2026-11-10 (pushed):
 
 - nyx-packages `e8c92a0`: the series through `builtins.path` (the third finding);
   Hyprland's derivation is the same at nyx-hyprland `3e9de48` and `1c49fc1`.
-- nyx-packages `974c980`: the lock at nyx-hyprland `1c49fc1`, nyx-shell `d2bfcf1`,
-  nyx-design `71d351c`, nyx-system `df6ba88` and nyx-settings `2d96442`, with git
-  hashes for nyx-core `47c5e0f` and `c6590d4`. Every affected package evaluates in
-  the VM; none is built.
-- nyxos branch `window-controls` (`12017a1`): the patch above. It can't go on `main`
-  before `main` pins nyx-packages `974c980` or later: the pinned `3772a48` has no
-  plugin source, so loading the plugin would fail the build.
+- nyx-packages `974c980`: nyx-hyprland `1c49fc1`, nyx-shell `d2bfcf1`, nyx-design
+  `71d351c`, nyx-system `df6ba88`, nyx-settings `2d96442`; nyxos pins it through
+  `959ba58`.
+- nyxos `c34c408`: Nyx Shell Core on by default. It was off "until components move
+  onto it", and they had: without nyx-shell-qs NyxOS drew no Control Center panel (the
+  GTK one isn't started) and no OSD.
+- nyxos `7801b5f`: the patch above.
 
-To turn it on: push nyx-packages, pin it in nyxos, merge `window-controls`, rebuild the
-VM (Hyprland rebuilds once, plus the Rust apps whose pins moved) and log in again.
+The incus-dev system builds with both (in a scratch copy in the VM: nyx-decor, both
+Shell Core units with the session, the plugin and rules in hyprland.lua). Not yet
+switched or run in a session.
 
 ## 9. Stage 5 results (2026-11-10)
 
