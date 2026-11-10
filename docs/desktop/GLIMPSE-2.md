@@ -223,3 +223,29 @@ nyxos (`nyx` routing) → nyx-packages (packages, manifests, service files) on a
   - Completion of paths.
   - Natural-language interpretation through AI Core (optional, not started).
   - Commands for actions that only AI Core's connections serve (only `glimpse.search` today, which Glimpse leaves out anyway).
+
+### Phase 4: mini-app framework
+
+- **nyx-core `3e7a698`.** `Registry::watch(app, topic)`: Watch, the state now, then `StateChanged` merge patches (the whole state again after a gap), and an end when the app goes. Dropping it sends `Unwatch`. Also `apply_patch`.
+- **nyx-glimpse `897db54`:**
+  - **Search, panel and full app.** A query whose first word is exactly an app's name or alias, for an app whose manifest names one of Glimpse's panels, lists the app first under Applications (*Example at a glance*). While that row is selected, the preview area is the panel.
+    - Enter moves the keyboard into the panel; Escape gives it back with the search as it was.
+    - Ctrl+Enter opens the full app, through its `open` action or its desktop entry.
+    - The words after the name reach the panel (`music jazz`, so `jazz`).
+  - **Panels.** Panels are Glimpse's QML only (`quickshell/Glimpse/panels/<id>/Panel.qml`, with `commands::PANELS` as the allowlist; `example` exists for test copies alone), loaded asynchronously when shown and destroyed after. They see only `PanelHost`: `query`, `topic(name)`, `run(action, arguments, done)` (only their own app's actions, checked as any other call, with an in-panel "Go ahead" for those that ask), `open`, `say` and `back`. Loading and error states use `StateView`. A panel's preferred size sizes the frame, within the screen.
+  - **Live state.** The backend publishes `panel:<app>:<topic>`. The first viewer starts a nyx-actions watch (on nyx-ui-link's `on_watch`); the last one leaving stops it, and the app hears `Unwatch`. The panel is kept across a pending search, so typing on doesn't restart it. The catalog is asked once at start, so the first look already knows which apps run.
+  - **Security.** The backend's socket takes only Glimpse's own programs (`qs`/Quickshell and `nyx-glimpse`; `NYX_GLIMPSE_ALLOW_ANY=1` for test copies). Before this, any same-user program could have run commands with `confirmed` as Glimpse.
+- **Tests:**
+  - nyx-actions: a private-bus watch test (state, a patch, `Unwatch` on drop); merge-patch unit tests.
+  - Glimpse: panel offers (only the whole app name, only allowlisted panels, the query and size) and the peer check; 28 library tests; clippy clean.
+- **Checked on a headless output** (test copy, private bus, a stand-in app in Python serving Control API 2 with a ticking `status` topic):
+  - The panel appears for `example world`, with the query and a live count.
+  - `PanelRun` cases: ping; reset asks, then runs once confirmed, and the unconfirmed call never reached the app; another app's action is refused.
+  - Leaving the panel sends `Unwatch`, and coming back watches again.
+  - Typing `example a`, then `ab`, then `abc` kept one watch.
+  - Focus never moved.
+- **Installed;** the real `nyx-shell-qs` reconnected to the restricted socket.
+- **Not yet:**
+  - Real panels (Music, Home, Files in phase 5).
+  - Panel keyboard checks on a real keyboard (the test copy runs without one).
+  - Pinning (phase 7).
