@@ -386,3 +386,12 @@ nyxos (`nyx` routing) → nyx-packages (packages, manifests, service files) on a
   - `share/nyx` linked for every app;
   - Glimpse's Quickshell panel as a Nyx Shell component, with its backend started with the session.
   - After pushing: update the inputs, run `scripts/git-hashes`, build.
+- **Devices** (nyx-settings `3e3e66e`, Glimpse `349032c`, nyx-core `cba03d3`, `ebd5869`):
+  - Nyx Settings hosts the phones paired through Flux: `devices.list`, `ring`, `send` (the clipboard; asks first) and `open`.
+  - The `devices` topic feeds Glimpse's Devices panel. D-Bus starts Settings without a window.
+  - Settings' own tools stay read-only.
+  - Settings moved to nyx-core `47c5e0f`, which also fixes its control interface: the `3691c99` pin had the dropped-Service bug.
+  - In nyx-actions, an app's default action takes free words only in its own namespace, completion lists the typed namespace's verbs, and usage names each action's namespace.
+  - Glimpse shows a multi-namespace app's panel for the word that names it.
+  - Checked against the real fluxd, read only: the phone listed, and sending asked first. Ringing wasn't run.
+  - nyx-packages `glimpse-2` `fb71942` adds Settings' manifest.
