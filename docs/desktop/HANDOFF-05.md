@@ -360,17 +360,37 @@ build can't read:
 On NyxOS, the previous generation (`nixos-rebuild --rollback`, or the boot menu) undoes
 the packaging; user data is the same as on the laptop.
 
+#### Since then (2026-11-09)
+
+- nyx-packages rebased onto Handoff 03's main as `handoff-05-rebased` (`1744cec`; the old
+  `handoff-05` branch is superseded and can be deleted): pins nyx-chat `e4c2086`,
+  nyx-glimpse `aec9bb4`, nyx-assistant `2b8e8f6`, nyx-ai `8adb415`, nyx-voice `1ebd749`,
+  nyx-notes `d692d26`, nyx-settings `efa3eee`, with their git hashes. `nix flake check
+  --no-build`, the format check and the NyxOS `incus-dev` evaluation pass in the VM;
+  nothing was built. Main's `nyx-shell-qs` loads every package's
+  `share/nyx-shell/components`, so Glimpse's panel and the Assistant's Aura come up with
+  it.
+- nyxos `handoff-05` (`2e867e3`): main merged in.
+- Notes (`eb7db4b`, `d692d26`): writing and semantic search go to Nyx AI Core through
+  `nyx-ai-client`, so the Assistant needn't run. Local AI preferences choose the writing
+  and embedding models from AI Core's (default: AI Core's model for the role; never
+  swapped for another). The index's profile is the embedding model's file and vector
+  settings, read without loading it. Installed.
+- The Assistant (`2b8e8f6`): `actions.list` and `actions.run` in the `nyx-apps` ability
+  (1.6.0) reach other apps' shared actions; running one always asks, showing the action
+  and its arguments. The Quickshell Aura backs off to 30 s between tries while the daemon
+  is off. Installed, daemon left stopped. `canvas_protocol_validates_content_and_file_permissions`
+  in assistant-tools fails before and after this change.
+- Glimpse (`aec9bb4`): `tests/core.rs` builds again in the standalone repository.
+
 #### Left to do
 
-- Merge nyx-packages `handoff-05`, then nyxos `handoff-05` (its `flake.lock` moved to that
-  nyx-packages revision), build, rebuild the VM and check Glimpse's QML panel, Nyx Voice
-  dictation and the Assistant there.
-- `Nyx.Ui` (nyx-design) and `BackendClient` (nyx-shell) are another session's uncommitted
-  work; Glimpse's QML panel and the Control Center's need them committed and packaged.
+- Merge nyx-packages `handoff-05-rebased`, then nyxos `handoff-05` with its `flake.lock`
+  updated to that nyx-packages revision; build, rebuild the VM and check Glimpse's QML
+  panel, Nyx Voice dictation and the Assistant there.
 - Benchmarks after the migration (Glimpse's semantic query and indexing through AI Core;
   the Assistant's spoken turn end to end) weren't run: they need real inference on the
   GPU (Ken, 2026-11-08). Baselines are in section 4.
-- The Assistant offering its own tools through `serve_actions`, and a generic tool for
-  shared actions the `nyx-apps` ability doesn't list.
-- Notes calling AI Core directly (nyx-notes) instead of the Assistant's model API.
+- The Assistant offering its own tools through `serve_actions` (nothing it has suits
+  other apps yet).
 - Glimpse's GTK panel on the backend module (it runs the same providers itself today).
