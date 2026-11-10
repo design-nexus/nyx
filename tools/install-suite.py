@@ -80,6 +80,19 @@ def main():
   if local_cli.is_file():shutil.copy2(local_cli,temporary)
   else:download(RAW+'/bin/nyx',temporary)
   temporary.chmod(0o755);temporary.replace(binary)
+  # nyx-actions (nyx apps, nyx APP …) from nyx-core at the suite's revision, rebuilt when it changes.
+  core=repos.get('core',{});revision=core.get('actions_revision');actions=binary.with_name('nyx-actions');stamp=data/'nyx/nyx-actions.revision'
+  if revision and not (actions.exists() and stamp.exists() and stamp.read_text().strip()==revision):
+   if not shutil.which('cargo'):print('Warning: Rust (cargo) is missing, so nyx-actions (nyx APP …) was not built.',file=sys.stderr,flush=True)
+   else:
+    source=work/'nyx-core';subprocess.run(['git','init','-q',str(source)],check=True)
+    subprocess.run(['git','-C',str(source),'fetch','-q','--depth','1',core['url'],revision],check=True)
+    subprocess.run(['git','-C',str(source),'checkout','-q','FETCH_HEAD'],check=True)
+    print('Building nyx-actions from nyx-core at '+revision[:12],flush=True)
+    env=dict(os.environ);env.pop('CARGO_TARGET_DIR',None)
+    subprocess.run(['cargo','build','--release','--locked','-p','nyx-actions','--features','cli'],cwd=source,env=env,check=True)
+    temporary=actions.with_name('nyx-actions.new');shutil.copy2(source/'target/release/nyx-actions',temporary)
+    temporary.chmod(0o755);temporary.replace(actions);stamp.parent.mkdir(parents=True,exist_ok=True);stamp.write_text(revision+'\n')
   # Recolour the icons just installed; turn on following unless it was turned off.
   follow_off=(data/'nyx/icons/follow-off').exists()
   icon_command=['follow','on'] if not follow_off else ['sync','--quiet']

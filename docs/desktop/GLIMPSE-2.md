@@ -152,3 +152,43 @@ nyxos (`nyx` routing) → nyx-packages (packages, manifests, service files) on a
 - The contract: nyx-core `crates/nyx-actions/docs/CONTRACT.md`.
 - This document.
 - Nothing built or installed; no behaviour changed.
+
+### Phase 2: registry and CLI
+
+- **nyx-core `0efc823`, `f6fd2e5`.**
+  - `crates/nyx-actions` has:
+    - the contract's types, parsing API 1 and API 2 descriptions;
+    - `check_call`, shared by every frontend and the app helper;
+    - deterministic word resolution (namespaces, aliases with preset arguments, unique prefixes, the default action for free words, positional arguments and flags converted by schema, "did you mean");
+    - typed errors with exit codes;
+    - the registry (manifests in `nyx/actions`, running apps, D-Bus activation, `Invoke` or API 1's `Call`, timeouts).
+  - The `nyx-actions` command (`apps`, `help`, `run`, `call`, `has`, `complete`, `completion bash|zsh|fish`).
+  - `nyx_core::control` serves API 2 with the same `serve`/`serve_async`, so no app changes yet:
+    - callers identified by their program (`nyx-peer`);
+    - only Nyx programs get past read-only;
+    - confirmation and schemas checked before the handler;
+    - `Invoke` with typed errors;
+    - `State`/`Watch`/`Unwatch`/`StateChanged`, sent to watchers only and coalesced to 10 a second;
+    - `serve_with` (the caller and `confirmed` for the handler);
+    - `describe_if_asked` for installers.
+- **nyx-ai `74547c5`.** AI Core's D-Bus discovery and routing are nyx-actions:
+  - Installed apps are listed (`source: manifest`) and started for a call.
+  - Served actions get the same checks.
+  - `list_actions` gains `detail` (the apps as nyx-actions describes them). Replies without it are byte-for-byte version 1, which `ActionSpec`'s strict reading needs.
+  - `nyx-ai-client` has `list_actions_detail`, which falls back on an older AI Core.
+- **nyx `bin/nyx`, nyxos `0562691` (`pkgs/nyx-cli/nyx.sh`).**
+  - `nyx apps`, `nyx APP …` and `nyx completion SHELL`. Built-in words win.
+  - The laptop gives nyx-actions' "did you mean" for unknown words. NyxOS still sends them to `nix`.
+  - `install-suite.py` builds nyx-actions at `suite.toml`'s new `actions_revision`.
+- **nyx-assistant `e13a92d`.** `nyx-apps` 1.6.1 calls apps through `nyx-actions call` when AI Core isn't there; under API 2, `busctl` would be read-only.
+- **Tests:**
+  - nyx-actions: 18 unit tests, plus a private-bus test of an API 2 app, an API 1 app, an activated app, a closed app, refusals, confirmation, a timeout, typed app errors, state and manifest reloads.
+  - nyx-core: a private-bus test of the helper (trusted and untrusted callers through `Invoke` and `Call`, sensitive topics, `StateChanged` to a watcher, refused calls never reaching the handler).
+  - nyx-ai: the whole suite against the stub worker, plus a protocol test of `detail`.
+  - The umbrella's suite tests; shellcheck on both `nyx` scripts.
+- **Installed on the laptop:** `nyx-actions` and `nyx` in `~/.local/bin`, AI Core (`./install.sh`; the pinned llama.cpp build was current, so nothing downloaded), and the `nyx-apps` ability (copied while the Assistant was stopped).
+- **No app ships a manifest or API 2 tools yet**, so `nyx apps` lists nothing: phases 5 and 6.
+- **Not yet:**
+  - nyx-packages (an `nyx-actions` package for `nyx` on NyxOS) waits for nyx-core on GitHub.
+  - nyx-design's nyx-core pin moves when apps adopt API 2, not before: Glimpse needs only the separate `nyx-actions` crate.
+  - `requires` checks `program:NAME` only; other capability kinds count as present.

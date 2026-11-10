@@ -8,6 +8,9 @@
 #   nyx uninstall APP… [--purge]
 #   nyx share FILE…            share through the Share Sheet (nyx share --help)
 #   nyx display virtual …      split a wide screen into virtual monitors (nyx display --help)
+#   nyx apps                   what Nyx apps can do from here (nyx apps help APP)
+#   nyx APP [ACTION] [ARGS…]   an app's action: nyx notes create "Ideas", nyx music jazz
+#   nyx completion SHELL       completions for bash, zsh or fish
 set -euo pipefail
 
 REPO="design-nexus/nyx"
@@ -23,6 +26,19 @@ program() {
     cloud) echo nyx-cloudd ;;
     *) echo "nyx-$1" ;;
   esac
+}
+
+builtins="icons list install update uninstall remove share display dev release apps completion"
+
+# Nyx apps' actions, through nyx-actions (built from nyx-core with the CLI).
+actions_bin() {
+  if [[ -x $bin/nyx-actions ]]; then echo "$bin/nyx-actions"; else command -v nyx-actions; fi
+}
+
+actions() {
+  local found
+  found=$(actions_bin) || { echo "nyx-actions is missing; reinstall the Nyx CLI." >&2; exit 1; }
+  exec "$found" "$@"
 }
 
 installed() {
@@ -77,5 +93,22 @@ case ${1:-} in
     display=$(command -v nyx-display || echo "$bin/nyx-display")
     [[ -x $display ]] || { echo "nyx display comes with Settings. Install it with: nyx install settings" >&2; exit 1; }
     exec "$display" "$@" ;;
-  *) sed -n '2,10p' "$0" | sed 's/^# \{0,1\}//'; exit 1 ;;
+  apps)
+    shift
+    case ${1:-} in
+      help) shift; actions help "$@" ;;
+      list) shift; actions apps "$@" ;;
+      *) actions apps "$@" ;;
+    esac ;;
+  completion)
+    shift
+    # shellcheck disable=SC2086 # the built-in commands are words
+    actions completion "${1:-bash}" $builtins ;;
+  "" | -h | --help | help) sed -n '2,13p' "$0" | sed 's/^# \{0,1\}//'; [[ -n ${1:-} ]] ;;
+  *)
+    # An app's command, or nyx-actions' "did you mean" for a word nothing answers to.
+    if found=$(actions_bin); then
+      exec "$found" run "$@"
+    fi
+    sed -n '2,13p' "$0" | sed 's/^# \{0,1\}//'; exit 1 ;;
 esac

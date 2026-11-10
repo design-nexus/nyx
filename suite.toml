@@ -16,6 +16,7 @@ development_contracts = [
   "Notes Control v1: opt-in vault reads and reviewed edit proposals/status; existing Control D-Bus signatures unchanged",
   "Assistant model API v1: correlated local generation and opt-in loopback embeddings; existing socket commands unchanged",
   "Glimpse Notes profile v1: opt-in read-only launcher.sqlite export and validated Notes host actions; SDK handshake unchanged",
+  "Control API 2 (nyx-core crates/nyx-actions/docs/CONTRACT.md): Describe and Call unchanged; Invoke, State, Watch, Unwatch and StateChanged added; installed manifests in nyx/actions; only Nyx programs past read-only actions",
 ]
 
 # The umbrella itself (this repository): suite manifest, installer and `nyx` CLI.
@@ -31,6 +32,8 @@ mode = "self"
 id = "core"
 name = "nyx-core"
 dependency_revision = "ce9cdf835790b2347a3bc5d65ef2d45f634132d5"
+# The nyx-actions command behind `nyx APP …`, built by the installer with the CLI.
+actions_revision = "f6fd2e5caba211eabdacf619c33160d7c03bb4ce"
 url = "https://github.com/design-nexus/nyx-core.git"
 revision = "ce9cdf835790b2347a3bc5d65ef2d45f634132d5"
 status = "published"
