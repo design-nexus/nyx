@@ -192,3 +192,34 @@ nyxos (`nyx` routing) → nyx-packages (packages, manifests, service files) on a
   - nyx-packages (an `nyx-actions` package for `nyx` on NyxOS) waits for nyx-core on GitHub.
   - nyx-design's nyx-core pin moves when apps adopt API 2, not before: Glimpse needs only the separate `nyx-actions` crate.
   - `requires` checks `program:NAME` only; other capability kinds count as present.
+
+### Phase 3: Glimpse commands
+
+- **nyx-core `17fa6ff`, `2b4874e`.** `resolve::complete` (namespaces, verbs and aliases, an argument's values and flags) is shared by the CLI and Glimpse. `Registry::cached` gives the catalog without waiting for apps. Errors from starting an app use its name.
+- **nyx-glimpse `485f0d1`.** In the Quickshell panel:
+  - A new `commands.rs`, on the same registry. A search starting with an app's name gives command rows:
+    - the app's commands;
+    - the typed command with its arguments resolved;
+    - completions of the word being typed.
+  - Typed as a command, they come first under Commands. The app's name alone puts them after apps and files.
+  - Other searches match actions by title, alias and keyword. This replaces AI Core's shared actions in the backend, keeps the `action:` IDs so favorites and learning carry over, and drops the old "no required arguments" limit.
+  - Each row has a tag: Needs TITLE, Asks first, or Unavailable.
+  - Keys: Tab takes the row's words. Enter runs a ready command, fills the search for one with missing arguments, or gives the reason for one that's unavailable.
+  - Confirmation: a card in the preview ("…? Notes deletes or overwrites. Press Enter again…") with the arguments. The second Enter sends `confirmed`, and the app checks again.
+  - Results show in the preview: lists as lines, objects as fields, messages in the status line.
+  - The GTK panel is unchanged and keeps AI Core's shared actions.
+- **Tests:**
+  - nyx-actions: the completion test.
+  - Glimpse: `commands.rs` (rows, fills, tags, IDs, result kinds) and a backend test (commands from a manifest come first when typed as commands, the app's name alone finds the app first, `pw` stays the vault's).
+  - Glimpse's library and `search_workflows` suites; clippy clean.
+- **Checked on a headless output**, on a test copy with its own backend socket, scratch XDG folders, a private D-Bus with a stand-in Weather app that D-Bus starts, `NYX_SHELL_NO_KEYBOARD=1` and only the Glimpse component. The checks:
+  - `notes` lists Notes' commands, tagged Unavailable for a closed app that only answers while open.
+  - `notes create Project ideas` resolves the title, and the preview says why it can't run now.
+  - `weather ` → Enter starts Weather through D-Bus and shows its result in the preview.
+  - Focus never moved.
+- **Installed** with `./install.sh glimpse` (backend and `nyx-shell-qs` restarted).
+- **Not yet:**
+  - Suggestions from apps' `x-nyx.suggest` actions (no app declares one yet).
+  - Completion of paths.
+  - Natural-language interpretation through AI Core (optional, not started).
+  - Commands for actions that only AI Core's connections serve (only `glimpse.search` today, which Glimpse leaves out anyway).
