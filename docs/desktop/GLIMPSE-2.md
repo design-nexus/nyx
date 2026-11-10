@@ -325,3 +325,37 @@ nyxos (`nyx` routing) → nyx-packages (packages, manifests, service files) on a
   - Calendar and Reminders headless: their data lives in the window.
   - A topic for Notes, such as recent notes.
   - Clipboard, Vault, Containers, Backup, Devices and AI Hub: they can adopt the same contract (`serve_with` plus a description and manifest) when their panels come.
+
+### Phase 7: pinned panels, accessibility and performance
+
+- **Nyx Shell** (nyx-shell `3acaec5`, `56505cf`):
+  - **`PinOverlay {id, pinned, size, monitor?}`** pins a persistent overlay. It's shown until unpinned, and other overlays in its group showing leave it alone. Shell Core lays it out: down the right edge of its monitor's usable area, 12 px in and 10 px apart, in pin order, with a new column when one is full. Size is 160×100 to 800×900.
+  - Refused when there's no room, for `all`, for other categories, or while locked.
+  - Laid out again when the monitor's size or reserved area changes, when the monitor goes (it moves to the active one), when another pin goes, and when its owner disconnects.
+  - The state's new `pin {size, at}` is what the surface follows. Hidden over fullscreen windows and while locked; on-demand keyboard, so it never takes focus by itself; no focus restoring.
+  - The same rules in `Standalone.qml` for the laptop.
+  - `PinnedSurface` (Nyx.Shell) draws one and pins it again after every registration, so a restarted Shell Core gets it back. `OverlaySurface` has a new `registered` signal.
+  - Tests: layout and columns, refusals, group, lock, monitors changing and going, removal, and the operation end to end (65 Shell Core tests).
+- **Glimpse** (`cfb619c`):
+  - Ctrl+P on an app panel pins it, and again unpins it (also a key hint).
+  - The pinned panel is the same panel QML and host, under a header with the app, Open and Unpin. It follows its topics only while shown, and shows Open <app> while the app can't answer.
+  - The backend keeps pins in the settings (`pinned`, at most six, app IDs and monitor names validated) and publishes them on `pins`, refreshed every 15 s while any exist. `Pin` and `Unpin` accept only apps with one of Glimpse's panels.
+  - A watch that ended (the app said no, or went away) starts again for a new viewer.
+- **Accessibility:**
+  - Nyx.Ui (nyx-design `7d52e29`): buttons, icon buttons (named by their tooltip), switches, sliders, list rows, segmented controls and search fields have roles, names, states, and press, toggle and step actions that do what their keys do.
+  - Glimpse: the search, the results list and rows (category, title, subtitle, why one can't run), the ask bar as an alert, and the rows of the Calendar, Reminders, Notes, Home and Weather panels.
+- **Performance:**
+  - Pinned panels follow their topics only while visible, and the 15 s refresh does nothing when no panel is pinned. Pins are keyed by app, so a refresh never rebuilds a surface. The layout only moves surfaces whose box changed.
+  - Measured on a headless output with test copies: a panel action through the backend takes about 5 ms (Weather from its cache); Pin and Unpin take 5 to 10 ms. The backend uses 41 MB; the Quickshell copy (debug runtime, Glimpse and two pins) 196 MB.
+- **Checked on a headless output** (standalone mode, private bus, scratch settings):
+  - Pinned Weather and Calendar stacked at (848, 38) and (848, 388) below the bar, and stayed after Glimpse closed and with it open.
+  - They came back after Quickshell restarted.
+  - Unpinning the top one moved the other up.
+  - Closing Calendar turned its pin into Open Calendar within 15 s.
+  - Found and fixed on the way: a switch case that broke standalone Show and Hide, surfaces rebuilt on every republish, and the unregister id lost on destruction.
+- **Installed:** the Nyx.Shell runtime (nyx-shell `56505cf`, nyx-design `7d52e29`) and Glimpse. Glimpse's QML needs the new runtime (`PinnedSurface`), so NyxOS's nyx-shell package must update with it.
+- **Left for later:**
+  - Moving a pinned panel by hand, which would need a Shell Core move operation.
+  - A pin edge or margin setting in `shell.toml`.
+  - Fullscreen hiding seen live (unit-tested only, since making a window fullscreen in a test moves focus).
+  - Orca on a session with the accessibility bus (it isn't running on the laptop).
