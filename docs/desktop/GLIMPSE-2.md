@@ -288,3 +288,40 @@ nyxos (`nyx` routing) → nyx-packages (packages, manifests, service files) on a
   - **Files:** the real build listed Downloads, copied with and without a clash, and moved, all in a scratch folder under `~/.cache` that was removed after.
   - Trash wasn't run end to end, to keep test files out of the real Trash.
 - **Installed:** Music, Home (nyx-homed restarted), Files, Glimpse, AI Core and `nyx-actions`. Manifests are in `~/.local/share/nyx/actions` and D-Bus services for Music and Files in `~/.local/share/dbus-1/services`.
+
+### Phase 6: Calendar, Reminders, Notes and Weather
+
+- **Calendar** (nyx-calendar `1aed197`):
+  - API 2 tools with risk, aliases and positionals (`nyx calendar today`, `nyx calendar find dentist`). `calendar.delete` asks first.
+  - New `calendar.add` turns words that say when into an event, with nyx-when as the quick-add dialog uses it (`nyx calendar add lunch with Sam tomorrow at 1`). New `calendar.open` opens the app at a day.
+  - The `upcoming` topic (the next 12 events), read every minute while watched and after a change.
+  - Answers while Calendar is open (`activation: running`): its calendar list and the calendars shown belong to the window.
+- **Reminders** (nyx-reminders `d910854`):
+  - API 2 tools: `nyx reminders add call Sam tomorrow at 9`, `done`, `today`, `find`; delete asks. New `reminders.open`.
+  - The `today` topic is sent again whenever the lists load, so a change shows once Evolution Data Server has it.
+  - `NYX_REMINDERS_APP_ID` runs a test copy. Answers while Reminders is open.
+- **Weather** (nyx-weather `67eed19`):
+  - Tools renamed to `weather.current`, `forecast`, `query`, `locations`, `select_location`, `refresh` and `open`, with typed arguments. The old names still work.
+  - `weather.current` adds five formatted days and icons. The `now` topic refreshes every 5 minutes while watched, from the forecast cache.
+  - D-Bus starts Weather without a window (`--gapplication-service`, as Music), and it quits 10 s after the last call.
+- **Notes** (nyx-notes `de8f38d`):
+  - Its integration tools have risks and aliases (`nyx notes find garden`). Writes stay proposals that Notes shows for review, and its read and propose-edit permissions still decide.
+  - No topic. Answers while Notes is open.
+- **Installers** write each app's manifest (Weather also gets its D-Bus service). Uninstallers remove them.
+- **Glimpse** (`9f91886`):
+  - **Calendar panel:** upcoming events by day; the words after `calendar` become an Add bar (Enter); Open Calendar at the picked event's day.
+  - **Reminders panel:** due today and overdue (overdue in red); Space or the checkbox marks one done; the words after `reminders` become an Add bar.
+  - **Notes panel:** searches the vault as you type (250 ms pause); Enter opens a note; Ctrl+N or the button proposes a new note titled with the words. Notes' own messages show when it's closed or a permission is off.
+  - **Weather panel:** the weather now, feels-like, high and low, wind, humidity, alerts and five days, in Weather's units; the words after `weather` ask a question (`weather tomorrow`).
+  - Fix: switching from one app's panel straight to another's followed the first app's topics ("Weather has no topic upcoming"). Topic names now come from the offer itself.
+  - Test copies can call a panel's own functions (`qs ipc … call glimpse mini add`).
+- **Checked on a headless output**, with test copies under test IDs on a private bus that also started Evolution Data Server with scratch folders:
+  - **Weather:** started by D-Bus headless; the panel showed now and five days; `weather tomorrow` answered.
+  - **Calendar:** `calendar lunch with sam tomorrow at 1pm` added the event to the scratch Personal calendar; the panel and the Calendar window both showed it.
+  - **Reminders:** `reminders call mum today at 6pm` added it; it showed under Today; marking it done removed it.
+  - **Notes:** a scratch vault with permissions on. `notes garden` found two notes; one opened in Notes; `notes packing list` proposed a note, and Notes showed its review without creating the file. With Notes closed, the row said "Open Notes to use this".
+- **Installed:** Calendar, Reminders, Weather, Notes and Glimpse, with manifests for all four. Ken's real calendars and reminders weren't touched.
+- **Left for later:**
+  - Calendar and Reminders headless: their data lives in the window.
+  - A topic for Notes, such as recent notes.
+  - Clipboard, Vault, Containers, Backup, Devices and AI Hub: they can adopt the same contract (`serve_with` plus a description and manifest) when their panels come.
