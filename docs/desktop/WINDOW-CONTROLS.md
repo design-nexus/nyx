@@ -247,8 +247,8 @@ only when the rules do (a config reload), as rule tags are static.
   nixpkgs' 1.48.
 - `patchSeries = "${inputs.nyx-hyprland}/patches/0.57.2"` makes Hyprland depend on the
   whole nyx-hyprland source, so any change there (the plugin included) rebuilds
-  Hyprland. `builtins.path { path = …/patches/0.57.2; name = …; }` would make it depend
-  on the series alone.
+  Hyprland. `builtins.path { path = …/patches/0.57.2; name = …; }` makes it depend on
+  the series alone (nyx-packages `e8c92a0`).
 
 The VM test worked around the first two in a scratch copy only (`/root/nyxdecor`).
 
@@ -263,8 +263,23 @@ SIGKILL, and the session stayed up. Any later nested test must do the same.
 
 `patches/nyxos-window-controls.patch` (next to this file) loads the plugin, the
 window-controls rules file and runs `nyx-shellctl window-controls --apply` at Hyprland's
-start. It goes into nyxos once nyx-packages `1fae17e` is pushed and pinned there, and
-NyxOS's Hyprland is 0.57.2 (the plugin needs it).
+start.
+
+Hyprland 0.57.2 builds in nyx-packages since `3772a48` (another session's fix for the
+first two findings above). Ready locally, not pushed (2026-11-10):
+
+- nyx-packages `e8c92a0`: the series through `builtins.path` (the third finding);
+  Hyprland's derivation is the same at nyx-hyprland `3e9de48` and `1c49fc1`.
+- nyx-packages `974c980`: the lock at nyx-hyprland `1c49fc1`, nyx-shell `d2bfcf1`,
+  nyx-design `71d351c`, nyx-system `df6ba88` and nyx-settings `2d96442`, with git
+  hashes for nyx-core `47c5e0f` and `c6590d4`. Every affected package evaluates in
+  the VM; none is built.
+- nyxos branch `window-controls` (`12017a1`): the patch above. It can't go on `main`
+  before `main` pins nyx-packages `974c980` or later: the pinned `3772a48` has no
+  plugin source, so loading the plugin would fail the build.
+
+To turn it on: push nyx-packages, pin it in nyxos, merge `window-controls`, rebuild the
+VM (Hyprland rebuilds once, plus the Rust apps whose pins moved) and log in again.
 
 ## 9. Stage 5 results (2026-11-10)
 
@@ -333,8 +348,8 @@ Hyprland file came out unchanged.
 
 The handoff's tests. "Nested VM" is a nested Hyprland 0.57.2 with nyx-decor in the
 NyxOS VM's session; "headless" a test copy on the laptop's own headless output. NyxOS
-itself can't run the whole stack yet (section 8: Hyprland 0.57.2 doesn't build in
-nyx-packages, and the NyxOS change waits for the pin).
+itself can't run the whole stack yet (section 8, "Turning it on in NyxOS": the pin and
+the NyxOS change are ready locally, not pushed).
 
 | Test | Result | Where |
 | --- | --- | --- |
