@@ -371,7 +371,9 @@ NyxOS page against the live plugin.
   changes mode.
 - Minimize is offered only where something brings a window back (Omarchy's floating
   workspaces); NyxOS has no hide mechanism, so it isn't offered there.
-- The headerbar has no app icon yet.
+- The headerbar's app icon comes from the app's desktop entry and the hicolor theme or
+  pixmaps (nyx-hyprland `1c49fc1`), not from the window: Hyprland 0.57 has no
+  toplevel-icon protocol. An app without a matching entry shows the title alone.
 - Native apps find their own window by process and title (GTK can't learn its Hyprland
   address); the hover delay is read once per app start.
 
