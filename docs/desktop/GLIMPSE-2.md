@@ -249,3 +249,42 @@ nyxos (`nyx` routing) → nyx-packages (packages, manifests, service files) on a
   - Real panels (Music, Home, Files in phase 5).
   - Panel keyboard checks on a real keyboard (the test copy runs without one).
   - Pinning (phase 7).
+
+### Phase 5: Music, Home and Files
+
+- **nyx-core:**
+  - `80fb009`: apps D-Bus has just started are described once their control interface appears.
+  - `3691c99`: the control helper holds an app while its topics are watched.
+  - `d78dba3`: `nyx-actions`' `server` feature, the control interface for zbus daemons, with the helper's rules and a private-bus test.
+  - `d53074b`: positional lists take their words (`nyx files copy a b ~/Docs`).
+  - `69277d8`: 25 s for a cold start.
+  - `47c5e0f`: the helper keeps answering when the returned `Service` isn't kept. Before this, every app on `serve`/`serve_async` would have stopped answering once rebuilt on it; a regression test now covers it.
+- **nyx-design** `b3bfdcc`, `99d1ef4`, `048e7bf`, `06f65ab`: the one nyx-core pin the apps carry. Committed from a clean worktree each time, leaving another session's work in progress alone.
+- **Music** (nyx-music `a0020a3`, `edf9a2d`):
+  - API 2 tools with risk, positional arguments and aliases (`nyx music pause`, `nyx music play album Blue Train`), plus `music.volume`, `music.playlists` and `music.open`.
+  - `playback` and `playlists` topics, worked out only while watched.
+  - A headless service mode: `--gapplication-service` handled by Music itself (GLib leaves it to apps that handle their own command line), held while playing, quitting after 10 s idle.
+  - The install writes the manifest and D-Bus service.
+  - Not done: output selection (Music has only the developer `MUSIC_AUDIO_SINK`; switching per app needs engine work).
+- **Home** (nyx-home `286c9cc`):
+  - `nyx-homed` serves `home.devices`, `home.switch` (`nyx home on kitchen`), `home.light`, `home.scene`, `home.climate`, `home.routines`, `home.run` (asks first) and `home.open` beside its own interfaces, through `devices.rs`' allowlist.
+  - The `home` topic (rooms, devices with Overview's favorites, scenes, routines) is read every 3 s only while watched.
+  - `Home.Devices1.Call` now takes only Nyx programs; Control Center's provider, a Nyx program, still can.
+- **Files** (nyx-files `bdd365b6`, `39b206aa`):
+  - `files.list`, `files.locations`, `files.search`, `files.open`, `files.reveal`, `files.copy`, `files.move` and `files.trash` (asks), inside the home folder.
+  - Copy, move and Trash go through the window's `LocalOperationProvider`: Keep both only where a name is taken, and Trash rather than delete.
+  - Headless, Files stays up 30 s after the last call.
+  - Places fall back to their usual folders when `user-dirs.dirs` doesn't name them.
+- **Glimpse** (`a620549`, `0d93977`, `e0915c9`):
+  - **Music panel:** cover, track, progress, controls, volume, playlists filtered by the words after `music`, Open Music.
+  - **Home panel:** scenes, favorites, rooms, toggles, dimming, thermostat ±, routines, Open Home, and an error state when Home Assistant isn't reachable.
+  - **Files panel:** places, breadcrumbs, folders first, picture previews, open, copy and move with Ctrl+C/X/V, Trash with Delete, Open in Files. `files downloads` opens Downloads; other words search by name.
+  - A panel gets its host before it completes. An app's name alone lists its verbs; aliases appear once a word is typed.
+- **nyx-ai** `d325462`: on nyx-core `47c5e0f`. The Assistant's action list now includes Files, Home and Music from their manifests.
+- **Checked on headless outputs**, with test copies on private buses and the apps under test IDs:
+  - **Music:** D-Bus started it headless; it played a generated tone (silent sink), the volume went to 40, the panel updated live, and it quit 10 s after the panel closed.
+  - **Home, real daemon:** its interface came up, the panel showed its error state without Home Assistant, and `dbus-send` was refused by `Devices1.Call`.
+  - **Home, Python stand-in with sample data:** the full panel, `home kitchen` filtering, and a switch through the panel's path.
+  - **Files:** the real build listed Downloads, copied with and without a clash, and moved, all in a scratch folder under `~/.cache` that was removed after.
+  - Trash wasn't run end to end, to keep test files out of the real Trash.
+- **Installed:** Music, Home (nyx-homed restarted), Files, Glimpse, AI Core and `nyx-actions`. Manifests are in `~/.local/share/nyx/actions` and D-Bus services for Music and Files in `~/.local/share/dbus-1/services`.
