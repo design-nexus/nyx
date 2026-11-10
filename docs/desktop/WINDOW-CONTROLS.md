@@ -168,7 +168,42 @@ Left for later stages: NyxOS's Hyprland config has to load
 monitors) needs nyx-core `ec92333`, which isn't pushed or pinned yet; Stage 2 was built
 and tested against the local nyx-core checkout until that pin moves.
 
-## 7. Constraints and open points
+## 7. Stage 3 results (2026-11-10)
+
+nyx-design `3584628` (nyx-ui `chrome.rs`, `base2.css`), nyx-shell `814a9b6`.
+
+- Every app using `app_header` gets one Close button at the header's end, tiled or
+  floating (before: three buttons, floating only). A click closes. After the pointer
+  rests on it for `[window_controls] hover_delay_ms`, or on a right-click, long press,
+  Menu, Shift+F10 or Down, a popover opens below it, right-aligned, so it only covers
+  content. A hover-opened popover doesn't take clicks or focus (Close still closes) and
+  stays open for 350 ms outside both, so the way into it doesn't close it; one opened
+  from the keyboard or a click takes focus. It closes when the window's mode changes,
+  the window loses focus, or the window goes away.
+- Rows come from `nyx_shell_proto::window::available` on the window's state, named for
+  the mode: floating Minimize (Omarchy's floating workspaces only), Maximize/Restore
+  size, Tile, Fullscreen, Keep on top; tiled Expand/Restore to the layout, Float,
+  Fullscreen; both Move to workspace (1 to 10) and Move to monitor (when there's
+  another). Outside Hyprland, GTK's own minimize, maximize and fullscreen.
+- Actions go through Shell Core (`window.own`) when its socket answers, else straight
+  to Hyprland with the same dispatchers.
+- The Hyprland check found that float takes `enable`/`disable`, not `set`/`unset` (any
+  other word toggles). Shell Core's `set_floating`/`set_tiled` were fixed
+  (`814a9b6`). Pin, maximize, fullscreen and float were all checked on a test window,
+  each restoring its floating geometry.
+- Installed on the laptop: Weather, built against the local nyx-design (its pin moves
+  to `3584628` once nyx-design is pushed; then the other apps follow by pin bump, no
+  code change).
+
+Limits found:
+
+- Headless captures of an unfocused tiled test window show no popovers at all (the
+  Maps session saw the same); floating ones do. The tiled popover's placement is
+  checked live.
+- The hover delay is read once per app start.
+- Move to workspace lists 1 to 10, not a virtual monitor region's own numbers.
+
+## 8. Constraints and open points
 
 - **Native window identity:** nyx-ui finds its own Hyprland window by pid and title.
   GTK4 can't learn its window's address or `stableId`. Stage 3 keeps pid plus title,
