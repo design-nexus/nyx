@@ -266,7 +266,38 @@ window-controls rules file and runs `nyx-shellctl window-controls --apply` at Hy
 start. It goes into nyxos once nyx-packages `1fae17e` is pushed and pinned there, and
 NyxOS's Hyprland is 0.57.2 (the plugin needs it).
 
-## 9. Constraints and open points
+## 9. Stage 5 results (2026-11-10)
+
+nyx-hyprland `02c2784`, nyx-shell `48d5082`, nyx-packages `ceed423`.
+
+- **Chromeless control** (nyx-decor): windows tagged `nyx-controls-chromeless-floating`
+  get a three-dot pill in a corner while they float; hidden when tiled, maximized or
+  fullscreen. It is a zero-size sticky decoration on all four edges, so its box is the
+  window's: clicks on the pill are its own (never half a click to the app), all others
+  pass through. Faint until hovered, then the theme's hover tint. Settings
+  `corner_button` and `corner_button_corner` (`top-right`, `top-left`, `bottom-right`,
+  `bottom-left`), applied live.
+- **Window menu** (`nyx-shell/qml/components/nyx-window-menu`, in nyx-shell-qs): opened
+  by Hyprland's custom event `nyx-window-menu,0xADDRESS,X,Y`, which the headerbar's
+  right-click and the chromeless control post (the event format moved from Stage 4's
+  `nyxdecor>>menu,…` to Hyprland's own custom event, so `hl.dsp.event` can raise it in
+  tests). Entries come from the window's `actions`, named as the native popover names
+  them, plus Close; Move to workspace lists the window's monitor's workspaces 1 to 10
+  (a virtual monitor's own, past its base), Move to monitor the others. Actions go
+  through Shell Core's `RequestWindowAction`. It is a transient, keyboard-exclusive
+  overlay over the point's monitor; Escape, a click outside, the window going away or
+  another window taking focus close it.
+- **Checked:** the control in a nested Hyprland 0.57.2 in the VM (tiled none, floating,
+  hover, maximized none, fullscreen none, bottom-left corner), next to a headerbar window;
+  the menu on the laptop on a headless output with a read-only test Shell Core, opened
+  by its test switch and by `hl.dsp.event("nyx-window-menu,…")`, placed at the event's
+  point.
+
+Not checked yet: clicking the control or a menu row (no click injection in either test),
+and the menu with the plugin in one session (needs NyxOS on Hyprland 0.57.2, with Shell
+Core and nyx-shell-qs).
+
+## 10. Constraints and open points
 
 - **Native window identity:** nyx-ui finds its own Hyprland window by pid and title.
   GTK4 can't learn its window's address or `stableId`. Stage 3 keeps pid plus title,
