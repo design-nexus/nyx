@@ -34,9 +34,26 @@ class IconCommands(unittest.TestCase):
                                     refresh=lambda: self.refreshes.append(1), systemctl=lambda *args: None)
         self.patch.start()
         self.addCleanup(self.patch.stop)
-        theme_patch = patch.multiple(icons.theme_tools, CONFIG=self.config, STATE=root / 'state')
+        self.snapshot = root / 'runtime/nyx/theme/system.json'
+        theme_patch = patch.multiple(icons.theme_tools, CONFIG=self.config, STATE=root / 'state', SNAPSHOT=self.snapshot)
         theme_patch.start()
         self.addCleanup(theme_patch.stop)
+        # Nyx Dark and Light as the launcher icons were drawn for, so these tests
+        # follow the sync's logic rather than the shipped palettes.
+        shipped = root / 'shipped'
+        shipped.mkdir()
+        accents = {'files': 'blue', 'notes': 'amber', 'photos': 'coral', 'mail': 'violet', 'calendar': 'red',
+                   'music': 'pink', 'home': 'green'}
+        (shipped / 'themes.json').write_text(json.dumps({
+            'nyx-dark': {'name': 'Nyx Dark', 'light': False, 'bg': '#09090a', 'text': '#e8e8ea', 'accent': '#5b9cff',
+                         'accents': accents},
+            'nyx-light': {'name': 'Nyx Light', 'light': True, 'bg': '#f7f7f8', 'text': '#18181b', 'accent': '#2f6fea',
+                          'accents': accents},
+        }))
+        load = icons.theme_tools.load
+        load_patch = patch.object(icons.theme_tools, 'load', lambda _assets, follow=True: load(shipped, follow))
+        load_patch.start()
+        self.addCleanup(load_patch.stop)
         self.firefox = '[Desktop Entry]\nType=Application\nName=Firefox\nExec=firefox %U\nIcon=firefox\n\n[Desktop Action Private]\nExec=firefox --private\nIcon=private\n'
         (self.system / 'firefox.desktop').write_text(self.firefox)
         logo = root / 'logo.svg'

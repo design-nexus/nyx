@@ -440,7 +440,10 @@ def units():
                f'[Service]\nType=oneshot\nExecStartPre=/usr/bin/sleep 1\nExecStart={command}\n')
     # Folders, not theme.toml itself: apps replace it by rename, which a file watch misses.
     # The launcher folders catch apps installed later, by packages as well as by hand.
-    folders = [CONFIG / 'nyx', CONFIG / 'nyx/themes', OUTPUT, *[root for root in roots() if root.is_dir()]]
+    # The snapshot's folder too: a theme resolves into it after theme.toml changes.
+    snapshot = Path(os.environ.get('XDG_RUNTIME_DIR', f'/run/user/{os.getuid()}')) / 'nyx/theme'
+    folders = [CONFIG / 'nyx', CONFIG / 'nyx/themes', OUTPUT, *[root for root in roots() if root.is_dir()],
+               *([snapshot] if snapshot.is_dir() else [])]
     watch = ''.join(f'PathChanged={path}\n' for path in dict.fromkeys(folders))
     path = ('[Unit]\nDescription=Recolour Nyx icons when the Nyx theme changes or an app is installed\n\n'
             f'[Path]\n{watch}Unit=nyx-icons.service\n\n[Install]\nWantedBy=default.target\n')

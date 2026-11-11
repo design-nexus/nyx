@@ -1,8 +1,10 @@
 """The active Nyx theme's colours for icons, as nyx-theme resolves them.
 
-Reads ~/.config/nyx/theme.toml: Follow Omarchy maps Omarchy's colors.toml on top
-of Nyx Dark or Light; otherwise the chosen shipped or user theme applies. Only
-what icons need is resolved: background, text, light, swatches, app accents.
+Reads the snapshot nyx-theme publishes for every app ($XDG_RUNTIME_DIR/nyx/theme/
+system.json). Without one, reads ~/.config/nyx/theme.toml: Follow Omarchy maps
+Omarchy's colors.toml on top of Nyx Dark or Light; otherwise the chosen shipped or
+user theme applies. Only what icons need is resolved: background, text, light,
+swatches, app accents.
 """
 import json
 import os
@@ -13,6 +15,8 @@ import tomllib
 HOME = Path.home()
 CONFIG = Path(os.environ.get('XDG_CONFIG_HOME', HOME / '.config'))
 STATE = Path(os.environ.get('XDG_STATE_HOME', HOME / '.local/state'))
+RUNTIME = Path(os.environ.get('XDG_RUNTIME_DIR', f'/run/user/{os.getuid()}'))
+SNAPSHOT = RUNTIME / 'nyx/theme/system.json'
 
 SWATCH_NAMES = ['blue', 'violet', 'pink', 'red', 'coral', 'amber', 'green', 'teal', 'graphite']
 DARK_SWATCHES = ['#5b9cff', '#9d7bff', '#ff6fae', '#ff6b6b', '#ff7a59', '#f2b545', '#46d08a', '#4cc9d6', '#a3a3ab']
@@ -130,12 +134,29 @@ def theme_by_id(theme_id, shipped):
     return over(shipped.get('tokyo-night', {}), {})
 
 
+def from_snapshot():
+    """The theme as the system resolved it for every app (nyx-theme's snapshot), so
+    icons follow any theme the way the apps do. None without a snapshot."""
+    try:
+        snap = json.loads(SNAPSHOT.read_text())
+    except (OSError, ValueError):
+        return None
+    legacy, swatch = snap.get('legacy', {}), snap.get('swatches', {})
+    bg, text, accent = color(legacy.get('bg')), color(legacy.get('text')), color(legacy.get('accent'))
+    if not (bg and text and accent and swatch):
+        return None
+    light = snap.get('theme', {}).get('appearance') == 'light' or legacy.get('light') == 'true'
+    named = swatches(swatch, light)
+    accents = {app: c for app, value in snap.get('accents', {}).items() if (c := color(value))}
+    return {'light': light, 'bg': bg, 'text': text, 'accent': accent, 'swatches': named, 'accents': accents}
+
+
 def resolve(shipped):
     """The active theme: light, bg, text, accent, swatches, accents, picks."""
     suite = read_toml(CONFIG / 'nyx/theme.toml') or {}
     mode = suite.get('mode', 'omarchy')
-    theme = None
-    if mode == 'omarchy':
+    theme = from_snapshot()
+    if theme is None and mode == 'omarchy':
         table = read_toml(STATE / 'omarchy/current/theme/colors.toml')
         if table:
             theme = from_omarchy(table, shipped)
@@ -149,7 +170,7 @@ def resolve(shipped):
 
 def stamp():
     """Identity and change time of every file the theme is read from."""
-    paths = [CONFIG / 'nyx/theme.toml', STATE / 'omarchy/current/theme/colors.toml']
+    paths = [CONFIG / 'nyx/theme.toml', STATE / 'omarchy/current/theme/colors.toml', SNAPSHOT]
     folder = CONFIG / 'nyx/themes'
     paths += sorted(folder.glob('*.toml')) if folder.is_dir() else []
     out = []
