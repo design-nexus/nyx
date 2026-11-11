@@ -289,14 +289,20 @@ def run(action, quiet=False):
             print(f'{status}: {name}')
     changed = False
     # `generate` opts third-party launchers in; from then on a sync also gives newly
-    # installed apps Nyx icons, until `restore` opts out.
+    # installed apps Nyx icons, until `restore` opts out. On NyxOS (the system runs the
+    # units) they're in from the start, and `restore` keeps them out.
     opted_in = STATE / 'third-party'
+    opted_out = STATE / 'third-party-off'
     if action == 'generate':
         STATE.mkdir(parents=True, exist_ok=True)
         opted_in.touch()
+        opted_out.unlink(missing_ok=True)
     elif action == 'restore':
         opted_in.unlink(missing_ok=True)
-    adopt = action == 'generate' or (action == 'sync' and opted_in.exists())
+        STATE.mkdir(parents=True, exist_ok=True)
+        opted_out.touch()
+    adopt = action == 'generate' or (action == 'sync' and (
+        opted_in.exists() or (MANAGED_UNITS and not opted_out.exists())))
     if action == 'restore':
         for identity, record in list(records.items()):
             if restore_one(identity, record):

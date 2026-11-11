@@ -224,6 +224,18 @@ class IconCommands(unittest.TestCase):
         self.assertNotEqual(dark, asset.read_text())
         self.assertEqual(set(self.records()), {'firefox.desktop', 'custom.desktop'})
 
+    def test_nyxos_adopts_installed_apps_until_restored(self):
+        self.suite('mode = "theme"\ntheme = "nyx-dark"\n')
+        with patch.object(icons, 'MANAGED_UNITS', True):
+            self.assertIn('generated (curated): Firefox', self.run_command('sync')[1])
+            self.assertIn('firefox.desktop', self.records())
+            self.assertEqual(self.run_command('restore')[0], 0)
+            (self.system / 'code.desktop').write_text(self.firefox.replace('Firefox', 'Code'))
+            self.run_command('sync')
+            self.assertNotIn('code.desktop', self.records(), 'restore keeps them out')
+            self.run_command('generate')
+            self.assertIn('code.desktop', self.records())
+
     def test_sync_adopts_apps_installed_after_generate(self):
         self.suite('mode = "theme"\ntheme = "nyx-dark"\n')
         self.run_command('generate')
@@ -295,6 +307,9 @@ class IconCommands(unittest.TestCase):
 
     def test_follow_with_managed_units(self):
         (self.config / 'omarchy').mkdir(parents=True)
+        # Only the units are tested here, not adopting other apps.
+        self.state.mkdir(parents=True, exist_ok=True)
+        (self.state / 'third-party-off').touch()
         with patch.object(icons, 'MANAGED_UNITS', True), contextlib.redirect_stdout(io.StringIO()):
             self.assertEqual(icons.follow(False), 0)
             self.assertTrue((self.state / 'follow-off').exists())
