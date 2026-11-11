@@ -12,6 +12,17 @@
   "name": "Catppuccin Frapp\u00e9",
   "shadow": "#232634",
   "surface": "#292c3c",
+  "swatches": {
+   "amber": "#e5c890",
+   "blue": "#8caaee",
+   "coral": "#ef9f76",
+   "graphite": "#737994",
+   "green": "#a6d189",
+   "pink": "#f4b8e4",
+   "red": "#e78284",
+   "teal": "#81c8be",
+   "violet": "#ca9ee6"
+  },
   "text": "#c6d0f5"
  },
  "catppuccin-latte": {
@@ -27,6 +38,17 @@
   "name": "Catppuccin Latte",
   "shadow": "#9ca0b0",
   "surface": "#e6e9ef",
+  "swatches": {
+   "amber": "#df8e1d",
+   "blue": "#1e66f5",
+   "coral": "#d84e2b",
+   "graphite": "#9ca0b0",
+   "green": "#40a02b",
+   "pink": "#ea76cb",
+   "red": "#d20f39",
+   "teal": "#179299",
+   "violet": "#ea76cb"
+  },
   "text": "#4c4f69"
  },
  "catppuccin-macchiato": {
@@ -42,22 +64,18 @@
   "name": "Catppuccin Macchiato",
   "shadow": "#181926",
   "surface": "#1e2030",
+  "swatches": {
+   "amber": "#eed49f",
+   "blue": "#8aadf4",
+   "coral": "#f5a97f",
+   "graphite": "#6e738d",
+   "green": "#a6da95",
+   "pink": "#f5bde6",
+   "red": "#ed8796",
+   "teal": "#8bd5ca",
+   "violet": "#c6a0f6"
+  },
   "text": "#cad3f5"
- },
- "catppuccin-mocha": {
-  "accent": "#89b4fa",
-  "bg": "#1e1e2e",
-  "border": "#313244",
-  "danger": "#f38ba8",
-  "dim_text": "#7f849c",
-  "glow": "#89b4fa",
-  "highlight": "#313244",
-  "light": false,
-  "muted": "#45475a",
-  "name": "Catppuccin Mocha",
-  "shadow": "#11111b",
-  "surface": "#181825",
-  "text": "#cdd6f4"
  },
  "dracula": {
   "accent": "#bd93f9",
@@ -72,6 +90,17 @@
   "name": "Dracula",
   "shadow": "#191a21",
   "surface": "#21222c",
+  "swatches": {
+   "amber": "#f1fa8c",
+   "blue": "#bd93f9",
+   "coral": "#ffb86c",
+   "graphite": "#6272a4",
+   "green": "#50fa7b",
+   "pink": "#ff92df",
+   "red": "#ff5555",
+   "teal": "#8be9fd",
+   "violet": "#ff79c6"
+  },
   "text": "#f8f8f2"
  },
  "everforest": {
@@ -87,6 +116,17 @@
   "name": "Everforest",
   "shadow": "#1e2326",
   "surface": "#272e33",
+  "swatches": {
+   "amber": "#dbbc7f",
+   "blue": "#7fbbb3",
+   "coral": "#e09d7f",
+   "graphite": "#4f585e",
+   "green": "#a7c080",
+   "pink": "#d699b6",
+   "red": "#e67e80",
+   "teal": "#83c092",
+   "violet": "#d699b6"
+  },
   "text": "#d3c6aa"
  },
  "gruvbox-dark": {
@@ -102,6 +142,17 @@
   "name": "Gruvbox Dark",
   "shadow": "#141414",
   "surface": "#1d2021",
+  "swatches": {
+   "amber": "#d8a657",
+   "blue": "#7daea3",
+   "coral": "#e1875c",
+   "graphite": "#7c6f64",
+   "green": "#a9b665",
+   "pink": "#d3869b",
+   "red": "#ea6962",
+   "teal": "#89b482",
+   "violet": "#d3869b"
+  },
   "text": "#ebdbb2"
  },
  "kanagawa": {
@@ -117,6 +168,17 @@
   "name": "Kanagawa",
   "shadow": "#0d0c0c",
   "surface": "#16161d",
+  "swatches": {
+   "amber": "#c0a36e",
+   "blue": "#7e9cd8",
+   "coral": "#c17158",
+   "graphite": "#727169",
+   "green": "#76946a",
+   "pink": "#938aa9",
+   "red": "#c34043",
+   "teal": "#6a9589",
+   "violet": "#957fb8"
+  },
   "text": "#dcd7ba"
  },
  "nord": {
@@ -132,10 +194,21 @@
   "name": "Nord",
   "shadow": "#242933",
   "surface": "#292e39",
+  "swatches": {
+   "amber": "#ebcb8b",
+   "blue": "#81a1c1",
+   "coral": "#d5967a",
+   "graphite": "#667080",
+   "green": "#a3be8c",
+   "pink": "#b48ead",
+   "red": "#bf616a",
+   "teal": "#88c0d0",
+   "violet": "#b48ead"
+  },
   "text": "#eceff4"
  },
  "nyx-dark": {
-  "accent": "#5b9cff",
+  "accent": "#3d8ae8",
   "accents": {
    "calendar": "red",
    "files": "blue",
@@ -145,20 +218,20 @@
    "notes": "amber",
    "photos": "coral"
   },
-  "bg": "#09090a",
-  "border": "#2a2a2d",
-  "card": "#161617",
-  "danger": "#ff6b6b",
-  "dim_text": "#9a9aa1",
-  "divider": "#1a1a1c",
+  "bg": "#0d0e12",
+  "border": "#2b2d37",
+  "card": "#191a21",
+  "danger": "#f2655f",
+  "dim_text": "#a2a5ba",
+  "divider": "#1d1e26",
   "font": {
    "heading_weight": 600,
    "mono": "JetBrains Mono",
    "ui": "Inter, Inter Variable, Inter 18pt",
    "weight": 400
   },
-  "glow": "#5b9cff",
-  "highlight": "#1d1d1f",
+  "glow": "#3d8ae8",
+  "highlight": "#1f2028",
   "hover": 0.06,
   "icons": {
    "file_colors": "brand",
@@ -170,11 +243,11 @@
    "see_through": false,
    "surface": "solid"
   },
-  "muted": "#2a2a2d",
+  "muted": "#2b2d37",
   "name": "Nyx Dark",
-  "panel": "#0e0e0f",
-  "popover": "#1a1a1c",
-  "raised": "#1d1d1f",
+  "panel": "#121318",
+  "popover": "#1d1e26",
+  "raised": "#1f2028",
   "sections": {
    "settings": {
     "accounts": "green",
@@ -189,24 +262,24 @@
    }
   },
   "selection": 0.16,
-  "shadow": "#030303",
+  "shadow": "#060609",
   "shape": {
    "radius_card": 11,
    "radius_dialog": 15,
    "radius_small": 7
   },
-  "success": "#46d08a",
-  "surface": "#1a1a1c",
+  "success": "#59d45b",
+  "surface": "#1d1e26",
   "swatches": {
-   "amber": "#f2b545",
-   "blue": "#5b9cff",
-   "coral": "#ff7a59",
-   "graphite": "#a3a3ab",
-   "green": "#46d08a",
-   "pink": "#ff6fae",
-   "red": "#ff6b6b",
-   "teal": "#4cc9d6",
-   "violet": "#9d7bff"
+   "amber": "#eeb43f",
+   "blue": "#3d8ae8",
+   "coral": "#f5875a",
+   "graphite": "#9ea2bf",
+   "green": "#59d45b",
+   "pink": "#c95fc6",
+   "red": "#f2655f",
+   "teal": "#3cc4c9",
+   "violet": "#8b6cf0"
   },
   "syntax": {
    "constant": "amber",
@@ -215,12 +288,12 @@
    "string": "green",
    "type": "teal"
   },
-  "text": "#e8e8ea",
-  "text_tertiary": "#7b7b83",
-  "warning": "#e0a63a"
+  "text": "#e7e8ee",
+  "text_tertiary": "#8a8ea8",
+  "warning": "#eeb43f"
  },
  "nyx-light": {
-  "accent": "#2f6fea",
+  "accent": "#136dcd",
   "accents": {
    "calendar": "red",
    "files": "blue",
@@ -230,20 +303,20 @@
    "notes": "amber",
    "photos": "coral"
   },
-  "bg": "#f7f7f8",
-  "border": "#dcdce1",
-  "card": "#ffffff",
-  "danger": "#d93a3a",
-  "dim_text": "#5a5a64",
-  "divider": "#e6e6ea",
+  "bg": "#ecedf2",
+  "border": "#cfd1db",
+  "card": "#f5f6f9",
+  "danger": "#cf3434",
+  "dim_text": "#50546c",
+  "divider": "#dadce4",
   "font": {
    "heading_weight": 600,
    "mono": "JetBrains Mono",
    "ui": "Inter, Inter Variable, Inter 18pt",
    "weight": 400
   },
-  "glow": "#2f6fea",
-  "highlight": "#ececef",
+  "glow": "#136dcd",
+  "highlight": "#e0e2ea",
   "hover": 0.05,
   "icons": {
    "file_colors": "brand",
@@ -255,11 +328,11 @@
    "see_through": false,
    "surface": "solid"
   },
-  "muted": "#d4d4d9",
+  "muted": "#c8cad5",
   "name": "Nyx Light",
-  "panel": "#f0f0f2",
-  "popover": "#ffffff",
-  "raised": "#ffffff",
+  "panel": "#e5e6ec",
+  "popover": "#f8f8fb",
+  "raised": "#f8f8fb",
   "sections": {
    "settings": {
     "accounts": "green",
@@ -274,24 +347,24 @@
    }
   },
   "selection": 0.14,
-  "shadow": "#c8c8cd",
+  "shadow": "#b6b8c6",
   "shape": {
    "radius_card": 11,
    "radius_dialog": 15,
    "radius_small": 7
   },
-  "success": "#1f9e5c",
-  "surface": "#ffffff",
+  "success": "#2f9a33",
+  "surface": "#f5f6f9",
   "swatches": {
-   "amber": "#b7791f",
-   "blue": "#2f6fea",
-   "coral": "#d4532f",
-   "graphite": "#5a5a64",
-   "green": "#1f9e5c",
-   "pink": "#c93a7b",
-   "red": "#d93a3a",
-   "teal": "#1a8fa0",
-   "violet": "#6f4de0"
+   "amber": "#a87012",
+   "blue": "#136dcd",
+   "coral": "#c9532a",
+   "graphite": "#6a6e90",
+   "green": "#2f9a33",
+   "pink": "#aa41a8",
+   "red": "#cf3434",
+   "teal": "#14869a",
+   "violet": "#6a4fd0"
   },
   "syntax": {
    "constant": "amber",
@@ -300,9 +373,9 @@
    "string": "green",
    "type": "teal"
   },
-  "text": "#18181b",
-  "text_tertiary": "#6c6c76",
-  "warning": "#b7791f"
+  "text": "#171820",
+  "text_tertiary": "#6a6e90",
+  "warning": "#a87012"
  },
  "one-dark-pro": {
   "accent": "#61afef",
@@ -317,6 +390,17 @@
   "name": "One Dark Pro",
   "shadow": "#181a1f",
   "surface": "#21252b",
+  "swatches": {
+   "amber": "#e5c07b",
+   "blue": "#61afef",
+   "coral": "#d19a66",
+   "graphite": "#5c6370",
+   "green": "#98c379",
+   "pink": "#c678dd",
+   "red": "#e06c75",
+   "teal": "#56b6c2",
+   "violet": "#c678dd"
+  },
   "text": "#abb2bf"
  },
  "rose-pine": {
@@ -332,6 +416,17 @@
   "name": "Ros\u00e9 Pine",
   "shadow": "#111019",
   "surface": "#1f1d2e",
+  "swatches": {
+   "amber": "#f6c177",
+   "blue": "#9ccfd8",
+   "coral": "#ea9a97",
+   "graphite": "#6e6a86",
+   "green": "#31748f",
+   "pink": "#c4a7e7",
+   "red": "#eb6f92",
+   "teal": "#ebbcba",
+   "violet": "#c4a7e7"
+  },
   "text": "#e0def4"
  },
  "solarized-dark": {
@@ -347,6 +442,17 @@
   "name": "Solarized Dark",
   "shadow": "#001e26",
   "surface": "#00232c",
+  "swatches": {
+   "amber": "#b58900",
+   "blue": "#268bd2",
+   "coral": "#cb4b16",
+   "graphite": "#586e75",
+   "green": "#859900",
+   "pink": "#d33682",
+   "red": "#dc322f",
+   "teal": "#2aa198",
+   "violet": "#6c71c4"
+  },
   "text": "#93a1a1"
  },
  "tokyo-night": {
@@ -362,6 +468,17 @@
   "name": "Tokyo Night",
   "shadow": "#0f0f14",
   "surface": "#16161e",
+  "swatches": {
+   "amber": "#e0af68",
+   "blue": "#7aa2f7",
+   "coral": "#eb927b",
+   "graphite": "#565f89",
+   "green": "#9ece6a",
+   "pink": "#bb9af7",
+   "red": "#f7768e",
+   "teal": "#449dab",
+   "violet": "#ad8ee6"
+  },
   "text": "#c0caf5"
  },
  "tokyo-night-moon": {
@@ -377,6 +494,17 @@
   "name": "Tokyo Night Moon",
   "shadow": "#191a2a",
   "surface": "#1e2030",
+  "swatches": {
+   "amber": "#ffc777",
+   "blue": "#82aaff",
+   "coral": "#ff966c",
+   "graphite": "#636da6",
+   "green": "#c3e88d",
+   "pink": "#fca7ea",
+   "red": "#ff757f",
+   "teal": "#4fd6be",
+   "violet": "#c099ff"
+  },
   "text": "#c8d3f5"
  },
  "tokyo-night-storm": {
@@ -392,6 +520,17 @@
   "name": "Tokyo Night Storm",
   "shadow": "#1b1e2d",
   "surface": "#1f2335",
+  "swatches": {
+   "amber": "#e0af68",
+   "blue": "#7aa2f7",
+   "coral": "#eb927b",
+   "graphite": "#565f89",
+   "green": "#9ece6a",
+   "pink": "#bb9af7",
+   "red": "#f7768e",
+   "teal": "#449dab",
+   "violet": "#ad8ee6"
+  },
   "text": "#c0caf5"
  }
 }

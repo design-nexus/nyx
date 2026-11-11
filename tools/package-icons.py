@@ -15,6 +15,8 @@ for name in ['make_icons.py', 'app-glyphs.json', 'third-party-glyphs.json']:
     shutil.copy2(source / name, target / name)
 # The shipped themes, so `nyx icons sync` can follow a Nyx theme without the apps.
 themes = {path.stem: tomllib.loads(path.read_text())
-          for path in sorted((design / 'crates/nyx-theme/themes').glob('*.toml'))}
+          for path in sorted((design / 'crates/nyx-theme-core/themes').glob('*.toml'))}
+if 'nyx-dark' not in themes:
+    sys.exit(f"no shipped themes in {design / 'crates/nyx-theme-core/themes'}")
 (target / 'themes.json').write_text(json.dumps(themes, indent=1, sort_keys=True) + '\n')
 print('Bundled canonical Nyx icon resources.')
