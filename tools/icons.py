@@ -180,7 +180,7 @@ class Logos:
                     return path
         return None
 
-    def render(self, path, renderer, tile):
+    def render(self, path, renderer, tile, theme=None, style=None):
         # Decode to pixels first: arbitrary source SVG content is never embedded.
         image = self.pixbuf.new_from_file_at_scale(str(path), 128, 128, True)
         pixels, channels, stride = image.get_pixels(), image.get_n_channels(), image.get_rowstride()
@@ -200,6 +200,8 @@ class Logos:
         ok, png = image.save_to_bufferv('png', [], [])
         if not ok:
             raise ValueError('Could not rasterize logo')
+        if style:
+            return renderer.styled_logo(png, color(.65, .78), theme, style)
         return renderer.render_logo(png, color(.38, .95), color(.65, .78), tile)
 
 
@@ -215,38 +217,80 @@ def refresh():
                 print(f'Warning: {executable}: {result.stderr.strip()}', file=sys.stderr)
 
 
-def umbra_command():
-    """The Umbra icon themes' command, when they're installed and in use."""
-    exe = shutil.which('umbra-icons') or str(HOME / '.local/bin/umbra-icons')
+# Icon themes drawn in the theme's colours by their own command: (name, command, config
+# folder, the theme folder holding its stamp). Each writes `<config>.json` into every
+# theme folder with the palette it was built in.
+ICON_SETS = [('Umbra', 'umbra-icons', 'umbra', 'Umbra'), ('Vellum', 'vellum-icons', 'vellum', 'Vellum')]
+# Looks with an app-icon style of their own (make_icons.STYLES), by config folder and
+# look, and by icon theme folder. Other looks keep the Nyx tile.
+STYLES = {('umbra', 'tinted'): 'tinted', ('umbra', 'frame'): 'frame', ('umbra', 'colour'): 'colour',
+          ('vellum', 'paper'): 'paper', ('vellum', 'mono'): 'mono'}
+STYLE_THEMES = {'Umbra-Tinted': 'tinted', 'Umbra-Frame': 'frame', 'Umbra-Colour': 'colour',
+                'Vellum': 'paper', 'Vellum-Mono': 'mono'}
+
+
+def set_look(config):
+    """The look an icon set is in use with (its settings' `look`), or None."""
     try:
-        settings = json.loads((CONFIG / 'umbra/settings.json').read_text())
-    except (OSError, ValueError):
+        return json.loads((CONFIG / config / 'settings.json').read_text()).get('look')
+    except (OSError, ValueError, AttributeError):
         return None
-    return exe if Path(exe).is_file() and settings.get('look') else None
 
 
-def umbra(theme, report):
-    """Rebuild Umbra in the Nyx theme's colours, so folder and file icons match it."""
-    exe = umbra_command()
-    if not exe:
-        return
+def set_command(name, config):
+    """An icon set's command, when it's installed and in use."""
+    exe = shutil.which(name) or str(HOME / '.local/bin' / name)
+    return exe if Path(exe).is_file() and set_look(config) else None
+
+
+def set_folders():
+    """Where the icon sets keep their settings (their look)."""
+    return [CONFIG / config for _, _, config, _ in ICON_SETS]
+
+
+def current_icon_theme():
+    try:
+        os.environ.setdefault('NO_AT_BRIDGE', '1')
+        from gi.repository import Gio
+        if Gio.SettingsSchemaSource.get_default().lookup('org.gnome.desktop.interface', True):
+            return Gio.Settings.new('org.gnome.desktop.interface').get_string('icon-theme')
+    except (ImportError, ValueError, AttributeError):
+        pass
+    return None
+
+
+def icon_style():
+    """The app-icon style of the icon set's look in use, or None for the Nyx tile. With
+    two sets in use, the one the desktop's icon theme is decides."""
+    in_use = [(config, set_look(config)) for _, _, config, _ in ICON_SETS if set_look(config)]
+    if len(in_use) > 1:
+        return STYLE_THEMES.get(current_icon_theme() or '')
+    return STYLES.get(in_use[0]) if in_use else None
+
+
+def icon_sets(theme, report):
+    """Rebuild the icon sets in use in the Nyx theme's colours, so folder and file icons
+    match it."""
     palette = {'name': 'Nyx', 'light': theme['light'], 'bg': theme['bg'], 'text': theme['text'],
                'accent': theme['accent'], 'swatches': {k: v for k, v in theme['swatches'].items()
                                                        if k in theme_tools.SWATCH_NAMES}}
-    path = STATE / 'umbra-palette.json'
-    written = write_if_changed(path, json.dumps(palette, indent=2, sort_keys=True) + '\n')
-    built = DATA / 'icons/Umbra/umbra.json'
-    try:
-        current = json.loads(built.read_text()).get('palette', {})
-        stale = any(current.get(k) != palette[k] for k in ('light', 'bg', 'text', 'accent', 'swatches'))
-    except (OSError, ValueError):
-        stale = True
-    if not (written or stale):
-        report('current', 'Umbra')
-        return
-    result = subprocess.run([exe, 'refresh', '--palette', str(path), '--quiet'], capture_output=True, text=True)
-    report('recoloured' if result.returncode == 0 else 'error', 'Umbra' if result.returncode == 0
-           else f'Umbra: {result.stderr.strip()}')
+    for name, command, config, folder in ICON_SETS:
+        exe = set_command(command, config)
+        if not exe:
+            continue
+        path = STATE / f'{config}-palette.json'
+        written = write_if_changed(path, json.dumps(palette, indent=2, sort_keys=True) + '\n')
+        try:
+            current = json.loads((DATA / 'icons' / folder / f'{config}.json').read_text()).get('palette', {})
+            stale = any(current.get(k) != palette[k] for k in ('light', 'bg', 'text', 'accent', 'swatches'))
+        except (OSError, ValueError):
+            stale = True
+        if not (written or stale):
+            report('current', name)
+            continue
+        result = subprocess.run([exe, 'refresh', '--palette', str(path), '--quiet'], capture_output=True, text=True)
+        report('recoloured' if result.returncode == 0 else 'error', name if result.returncode == 0
+               else f'{name}: {result.stderr.strip()}')
 
 
 def save(records):
@@ -318,7 +362,12 @@ def run(action, quiet=False):
         renderer_hash = digest((asset_dir / 'make_icons.py').read_bytes())
         theme = theme_tools.load(asset_dir, follow=following())
         tile = renderer.tile_for(theme['bg'], theme['text'], theme['light'])
-        palette = digest(json.dumps([tile, theme['swatches']], sort_keys=True))
+        # The look in use's app-icon style; a renderer without styles keeps the Nyx tile.
+        style = icon_style() if hasattr(renderer, 'styled') else None
+        palette = digest(json.dumps([tile, theme['swatches'], style], sort_keys=True))
+
+        def draw(glyph, accent):
+            return renderer.styled(glyph, accent, theme, style) if style else renderer.themed(glyph, accent, tile)
         # Nyx's own icons, as installed by each app: recoloured in place. Icons from
         # system packages can't be changed; their recoloured copy goes in the user's
         # folder, which icon lookup prefers.
@@ -328,7 +377,7 @@ def run(action, quiet=False):
             if installed is None:
                 continue
             family = renderer.family(glyph['light'])
-            svg = renderer.themed(glyph, theme_tools.icon_accent(theme, theme_tools.accent_key(glyph_id), family), tile)
+            svg = draw(glyph, theme_tools.icon_accent(theme, theme_tools.accent_key(glyph_id), family))
             if installed.read_text() == svg:
                 report('current', glyph_id)
             elif action == 'check':
@@ -378,9 +427,9 @@ def run(action, quiet=False):
                     report('outdated' if record else 'missing', label)
                     continue
                 if glyph:
-                    svg = renderer.themed(glyph, theme['swatches'][renderer.family(glyph['light'])], tile)
+                    svg = draw(glyph, theme['swatches'][renderer.family(glyph['light'])])
                 else:
-                    svg = logos.render(logo, renderer, tile)
+                    svg = logos.render(logo, renderer, tile, theme, style)
                 asset = 'nyx-third-party-' + digest(identity)[:24] + '.svg'
                 managed = replace_icon(raw, str(OUTPUT / asset))
                 original = record['original'] if record else raw
@@ -411,7 +460,7 @@ def run(action, quiet=False):
         if changed:
             refresh()
         if action in ('sync', 'generate'):
-            umbra(theme, report)
+            icon_sets(theme, report)
     if not quiet:
         print(', '.join(f'{value} {key}' for key, value in counts.items()) or 'No matching applications.')
     # Edited launchers are the user's choice; automatic syncs don't fail over them.
@@ -447,9 +496,10 @@ def units():
     # Folders, not theme.toml itself: apps replace it by rename, which a file watch misses.
     # The launcher folders catch apps installed later, by packages as well as by hand.
     # The snapshot's folder too: a theme resolves into it after theme.toml changes.
+    # The icon sets' folders: picking another look restyles the app icons.
     snapshot = Path(os.environ.get('XDG_RUNTIME_DIR', f'/run/user/{os.getuid()}')) / 'nyx/theme'
-    folders = [CONFIG / 'nyx', CONFIG / 'nyx/themes', OUTPUT, *[root for root in roots() if root.is_dir()],
-               *([snapshot] if snapshot.is_dir() else [])]
+    folders = [CONFIG / 'nyx', CONFIG / 'nyx/themes', *set_folders(), OUTPUT,
+               *[root for root in roots() if root.is_dir()], *([snapshot] if snapshot.is_dir() else [])]
     watch = ''.join(f'PathChanged={path}\n' for path in dict.fromkeys(folders))
     path = ('[Unit]\nDescription=Recolour Nyx icons when the Nyx theme changes or an app is installed\n\n'
             f'[Path]\n{watch}Unit=nyx-icons.service\n\n[Install]\nWantedBy=default.target\n')
@@ -465,7 +515,8 @@ def follow(on):
     if on:
         (STATE / 'follow-off').unlink(missing_ok=True)
         # A watch on a missing folder stops systemd seeing changes beside it.
-        (CONFIG / 'nyx/themes').mkdir(parents=True, exist_ok=True)
+        for folder in [CONFIG / 'nyx/themes', *set_folders()]:
+            folder.mkdir(parents=True, exist_ok=True)
         if not MANAGED_UNITS:
             if (CONFIG / 'omarchy').is_dir():
                 write_if_changed(HOOK, hook, 0o755)

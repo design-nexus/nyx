@@ -31,7 +31,9 @@ class IconCommands(unittest.TestCase):
                                     HOOK=self.config / 'omarchy/hooks/theme-set.d/40-nyx-icons',
                                     roots=lambda: [self.user, self.system],
                                     system_icons=lambda: [self.system_icons],
-                                    refresh=lambda: self.refreshes.append(1), systemctl=lambda *args: None)
+                                    refresh=lambda: self.refreshes.append(1), systemctl=lambda *args: None,
+                                    # The real umbra-icons and vellum-icons must never run.
+                                    set_command=lambda name, config: None)
         self.patch.start()
         self.addCleanup(self.patch.stop)
         self.snapshot = root / 'runtime/nyx/theme/system.json'
@@ -170,17 +172,70 @@ class IconCommands(unittest.TestCase):
         fake = root / 'umbra-icons'
         fake.write_text(f'#!/bin/sh\necho "$@" >> {calls}\n')
         fake.chmod(0o755)
-        with patch.object(icons, 'umbra_command', lambda: str(fake)):
+        commands = {'umbra-icons': str(fake)}
+        with patch.object(icons, 'set_command', lambda name, config: commands.get(name)):
             self.run_command('sync')
         palette = json.loads((self.state / 'umbra-palette.json').read_text())
         self.assertTrue(palette['light'])
         self.assertEqual(set(palette['swatches']), set(icons.theme_tools.SWATCH_NAMES))
         self.assertIn(f'refresh --palette {self.state / "umbra-palette.json"} --quiet', calls.read_text())
+        self.assertFalse((self.state / 'vellum-palette.json').exists())
+
+    def test_vellum_rebuilt_like_umbra(self):
+        self.suite('mode = "theme"\ntheme = "nyx-dark"\n')
+        root = Path(self.temp.name)
+        calls = root / 'vellum-calls'
+        fake = root / 'vellum-icons'
+        fake.write_text(f'#!/bin/sh\necho "$@" >> {calls}\n')
+        fake.chmod(0o755)
+        commands = {'vellum-icons': str(fake)}
+        with patch.object(icons, 'set_command', lambda name, config: commands.get(name)):
+            self.assertIn('recoloured: Vellum', self.run_command('sync')[1])
+        self.assertIn(f'refresh --palette {self.state / "vellum-palette.json"} --quiet', calls.read_text())
 
     def test_umbra_left_alone_when_not_in_use(self):
-        with patch.object(icons, 'umbra_command', lambda: None):
+        with patch.object(icons, 'set_command', lambda name, config: None):
             self.run_command('sync')
         self.assertFalse((self.state / 'umbra-palette.json').exists())
+
+    def use_look(self, config, look):
+        (self.config / config).mkdir(parents=True, exist_ok=True)
+        (self.config / config / 'settings.json').write_text(json.dumps({'look': look}))
+
+    def test_app_icons_take_the_looks_style(self):
+        self.suite('mode = "theme"\ntheme = "nyx-dark"\n')
+        renderer = self.install_nyx_icons('Files')
+        self.use_look('umbra', 'tile')
+        self.assertIn('1 current', self.run_command('sync')[1])
+        self.use_look('umbra', 'colour')
+        self.assertIn('recoloured: Files', self.run_command('sync')[1])
+        _, _, _, glyphs = icons.assets()
+        theme = icons.theme_tools.load(icons.assets()[0])
+        accent = icons.theme_tools.icon_accent(theme, 'files', 'blue')
+        self.assertEqual(self.nyx_icon('Files'), renderer.styled(glyphs['Files'], accent, theme, 'colour'))
+        self.use_look('umbra', 'tile')
+        self.run_command('sync')
+        self.assertEqual(self.nyx_icon('Files'), renderer.render_glyph(glyphs['Files']))
+
+    def test_vellum_look_styles_launchers_too(self):
+        self.suite('mode = "theme"\ntheme = "nyx-dark"\n')
+        self.use_look('vellum', 'paper')
+        self.assertEqual(icons.icon_style(), 'paper')
+        self.run_command('generate')
+        asset = (self.output / self.records()['firefox.desktop']['asset']).read_text()
+        self.assertIn('id="card"', asset)
+        self.use_look('vellum', 'mono')
+        self.assertIn('outdated: Firefox', self.run_command('check')[1])
+
+    def test_two_sets_in_use_follow_the_desktops_icon_theme(self):
+        self.use_look('umbra', 'frame')
+        self.use_look('vellum', 'mono')
+        with patch.object(icons, 'current_icon_theme', lambda: 'Vellum-Mono'):
+            self.assertEqual(icons.icon_style(), 'mono')
+        with patch.object(icons, 'current_icon_theme', lambda: 'Umbra-Frame'):
+            self.assertEqual(icons.icon_style(), 'frame')
+        with patch.object(icons, 'current_icon_theme', lambda: 'Umbra'):
+            self.assertIsNone(icons.icon_style())
 
     def test_picked_swatch_wins(self):
         self.suite('mode = "theme"\ntheme = "nyx-dark"\n[app_accents]\nfiles = "violet"\n')
@@ -277,6 +332,9 @@ class IconCommands(unittest.TestCase):
         self.assertIn(f'PathChanged={self.output}', path_unit)
         self.assertIn(f'PathChanged={self.user}\n', path_unit)
         self.assertIn(f'PathChanged={self.system}\n', path_unit)
+        self.assertIn(f'PathChanged={self.config}/umbra\n', path_unit)
+        self.assertIn(f'PathChanged={self.config}/vellum\n', path_unit)
+        self.assertTrue((self.config / 'vellum').is_dir())
         service = (icons.UNITS / 'nyx-icons.service').read_text()
         self.assertIn('icons sync --quiet', service)
         self.assertIn('StartLimitIntervalSec=0', service)

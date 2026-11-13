@@ -5,6 +5,7 @@
    "calendar": "red",
    "files": "blue",
    "home": "green",
+   "lyra": "violet",
    "mail": "violet",
    "music": "pink",
    "notes": "amber",
@@ -41,6 +42,69 @@
   "popover": "#1d1e26",
   "raised": "#1f2028",
   "sections": {
+   "activity": {
+    "performance": "amber",
+    "system": "red"
+   },
+   "agents": {
+    "active": "green",
+    "needs-you": "amber",
+    "recent": "graphite"
+   },
+   "calendar": {
+    "sets": "violet"
+   },
+   "chat": {
+    "chats": "coral",
+    "folders": "teal",
+    "library": "green",
+    "models": "violet",
+    "pinned": "amber"
+   },
+   "contacts": {
+    "lists": "violet",
+    "online": "green"
+   },
+   "containers": {
+    "hosts": "amber",
+    "resources": "teal"
+   },
+   "fonts": {
+    "library": "violet"
+   },
+   "git": {
+    "branches": "violet",
+    "remotes": "green",
+    "stashes": "pink",
+    "tags": "amber"
+   },
+   "lyra": {
+    "playlists": "pink"
+   },
+   "mail": {
+    "pinned": "amber"
+   },
+   "music": {
+    "online": "teal",
+    "playlists": "blue"
+   },
+   "news": {
+    "topics": "amber"
+   },
+   "passwords": {
+    "collections": "green",
+    "folders": "amber",
+    "other": "graphite",
+    "templates": "teal",
+    "types": "violet"
+   },
+   "pdf": {
+    "open-file": "violet"
+   },
+   "pulse": {
+    "chats": "violet",
+    "pinned": "amber"
+   },
    "settings": {
     "accounts": "green",
     "assistant": "teal",
@@ -51,6 +115,16 @@
     "input": "coral",
     "personalization": "violet",
     "system": "red"
+   },
+   "torrents": {
+    "categories": "violet",
+    "discover": "green",
+    "tags": "amber"
+   },
+   "weather": {
+    "environment": "green",
+    "maps-radar": "teal",
+    "saved-locations": "amber"
    }
   },
   "selection": 0.16,
@@ -90,6 +164,7 @@
    "calendar": "red",
    "files": "blue",
    "home": "green",
+   "lyra": "violet",
    "mail": "violet",
    "music": "pink",
    "notes": "amber",
@@ -126,6 +201,69 @@
   "popover": "#f8f8fb",
   "raised": "#f8f8fb",
   "sections": {
+   "activity": {
+    "performance": "amber",
+    "system": "red"
+   },
+   "agents": {
+    "active": "green",
+    "needs-you": "amber",
+    "recent": "graphite"
+   },
+   "calendar": {
+    "sets": "violet"
+   },
+   "chat": {
+    "chats": "coral",
+    "folders": "teal",
+    "library": "green",
+    "models": "violet",
+    "pinned": "amber"
+   },
+   "contacts": {
+    "lists": "violet",
+    "online": "green"
+   },
+   "containers": {
+    "hosts": "amber",
+    "resources": "teal"
+   },
+   "fonts": {
+    "library": "violet"
+   },
+   "git": {
+    "branches": "violet",
+    "remotes": "green",
+    "stashes": "pink",
+    "tags": "amber"
+   },
+   "lyra": {
+    "playlists": "pink"
+   },
+   "mail": {
+    "pinned": "amber"
+   },
+   "music": {
+    "online": "teal",
+    "playlists": "blue"
+   },
+   "news": {
+    "topics": "amber"
+   },
+   "passwords": {
+    "collections": "green",
+    "folders": "amber",
+    "other": "graphite",
+    "templates": "teal",
+    "types": "violet"
+   },
+   "pdf": {
+    "open-file": "violet"
+   },
+   "pulse": {
+    "chats": "violet",
+    "pinned": "amber"
+   },
    "settings": {
     "accounts": "green",
     "assistant": "teal",
@@ -136,6 +274,16 @@
     "input": "coral",
     "personalization": "violet",
     "system": "red"
+   },
+   "torrents": {
+    "categories": "violet",
+    "discover": "green",
+    "tags": "amber"
+   },
+   "weather": {
+    "environment": "green",
+    "maps-radar": "teal",
+    "saved-locations": "amber"
    }
   },
   "selection": 0.14,
