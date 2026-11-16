@@ -388,7 +388,8 @@ def run(action, quiet=False):
                 report('recoloured', glyph_id)
         logos = None
         eligible = set()
-        for identity, source in discover(records).items():
+        discovered = discover(records)
+        for identity, source in discovered.items():
             record = records.get(identity)
             if action == 'sync' and not record and not adopt:
                 continue
@@ -445,8 +446,12 @@ def run(action, quiet=False):
             except Exception as error:
                 eligible.add(identity)
                 report('error', f'{identity}: {error}')
-        # Sync only recolours; cleaning up removed apps is left to generate.
-        stale = set(records) - eligible if action != 'sync' else set()
+        # Sync also takes away copies of apps that were removed (no source launcher left);
+        # other cleaning (an app now hidden, or a Nyx app) is left to generate.
+        if action == 'sync':
+            stale = set(records) - set(discovered)
+        else:
+            stale = set(records) - eligible
         for identity in stale:
             if action == 'check':
                 report('obsolete', identity)
