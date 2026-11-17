@@ -1,14 +1,14 @@
 # Nyx
 
-Desktop apps for [Omarchy](https://omarchy.org), built with GTK 4 and Rust. They share
-one look: a flat, monospace window that takes its colors from your Omarchy theme and
+Desktop apps for NyxOS and [Omarchy](https://omarchy.org), built with GTK 4 and Rust. They
+share one look: a flat, monospace window that takes its colors from the desktop theme and
 changes with it, fits a half-screen tile, and works from the keyboard.
 
 | App | What it is |
 | --- | --- |
 | [Glimpse](https://github.com/design-nexus/nyx-glimpse) | A local universal search panel with plugins |
-| [Store](https://github.com/design-nexus/nyx-store) | Discover, install and update apps from Omarchy, Arch, AUR and custom sources |
-| [Settings](https://github.com/design-nexus/nyx-settings) | A control panel for Omarchy |
+| [Store](https://github.com/design-nexus/nyx-store) | Discover, install and update apps: the NyxOS catalog, nixpkgs and Flathub on NyxOS; Arch, AUR and custom sources on Omarchy |
+| [Settings](https://github.com/design-nexus/nyx-settings) | The control panel for NyxOS and Omarchy |
 | [Git](https://github.com/design-nexus/nyx-git) | Native Git client: visual commit graph, diffs, staging, branches and stashes |
 | [Passwords](https://github.com/design-nexus/nyx-passwords) | A password manager for your Vaultwarden server: logins, one-time codes and secure notes |
 | [Contacts](https://github.com/design-nexus/nyx-contacts) | A local address book: contacts, favorites, lists, birthdays and import/export |
@@ -19,7 +19,7 @@ changes with it, fits a half-screen tile, and works from the keyboard.
 | [Music](https://github.com/design-nexus/nyx-music) | A music player for your library, radio and podcasts |
 | [Media Player](https://github.com/design-nexus/nyx-media-player) | A video player for movies and TV shows |
 | [Theater](https://github.com/design-nexus/nyx-theater) | Your Plex and Jellyfin movies and shows together |
-| [Chat](https://github.com/design-nexus/nyx-chat) | A chat client for Ollama |
+| [Chat](https://github.com/design-nexus/nyx-chat) | A chat client for local models (Nyx AI Core) and Ollama |
 | [Fonts](https://github.com/design-nexus/nyx-fonts) | A font manager for Google Fonts and Nerd Fonts |
 | [Archive](https://github.com/design-nexus/nyx-archive) | An archive manager, built on 7-Zip |
 | [Office](https://github.com/design-nexus/nyx-office) | Write, Sheets and Present: documents, spreadsheets and slides |
@@ -47,7 +47,8 @@ Stream Decks and the assistant), installed from Settings → Extensions.
 
 ## Install
 
-Install the apps you want, or all of them:
+On NyxOS, the apps come with the system or from Welcome and the Store (`nyx install nyx-NAME`).
+On Omarchy, install the apps you want, or all of them:
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/design-nexus/nyx/main/install.sh | bash -s -- music pdf
